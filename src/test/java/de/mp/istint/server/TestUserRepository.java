@@ -1,11 +1,5 @@
-package com.example.istint.isintserver;
+package de.mp.istint.server;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBObject;
-
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +9,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
-public class TestBasic {
-    @DisplayName("Ich will nur testen!")
+public class TestUserRepository {
+
     @Test
-    public void test() {
-        System.out.println("TestBasic.test()");
+    public void testAdd(@Autowired MongoTemplate mongoTemplate) {
+        var u = new User(null, "test");
+
+        var ret = mongoTemplate.save(u);
+
     }
 }

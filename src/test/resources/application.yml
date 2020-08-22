@@ -4,3 +4,12 @@ spring:
       host: localhost
       port: 0
       database: springboot-mongo
+
+logging:
+  level:
+    root: info
+    org.springframework.boot.autoconfigure.mongo.embedded: off
+    org.mongodb: off    
+    
+  pattern:  
+    dateformat: "HH:mm:ss.SSS"       

@@ -1,10 +1,10 @@
-package com.example.istint.isintserver;
+package de.mp.istint.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class TestMainApplication {
 
 	@Test
 	void contextLoads() {
