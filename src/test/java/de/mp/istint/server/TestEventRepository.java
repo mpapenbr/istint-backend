@@ -6,7 +6,9 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import de.mp.istint.server.model.Event;
+import de.mp.istint.server.model.User;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -103,5 +108,20 @@ public class TestEventRepository {
         // check for otherUser
         check = eventRepository.findByOwner(otherUser);
         assertEquals(List.of(otherEvent), check);
+    }
+
+    @Test
+    public void testStealOwner() {
+        var demoEvent = Event.builder().carName("Car").trackName("track").name("DemoEvent").owner(demoUser).build();
+        var realEvent = Event.builder().carName("Car").trackName("track").name("RealEvent").owner(demoUser).build();
+
+        mongoTemplate.save(demoEvent);
+        mongoTemplate.save(realEvent);
+        mongoTemplate.remove(demoUser);
+        // note: the owner is just removed from the the entities ;) the value is now
+        // null
+        var check = eventRepository.findByNameRegex("Event");
+        var expect = Arrays.asList(new Object[] { null, null });
+        assertEquals(expect, check.stream().map(item -> item.getOwner()).collect(Collectors.toList()));
     }
 }

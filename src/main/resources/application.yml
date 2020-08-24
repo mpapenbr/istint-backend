@@ -6,7 +6,13 @@ spring:
       password: example
       database: local
       authentication-database: admin
+  # security:
+  #   user:
+  #     name: user
+  #     password: "{noop}password"
 
 logging:
   level:
-    org.springframework.data: debug      
+    de.mp.istint.server: debug
+    org.springframework.data: info      
+    org.springframework.security.authentication: debug

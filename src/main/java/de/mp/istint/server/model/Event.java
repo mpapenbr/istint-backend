@@ -1,4 +1,4 @@
-package de.mp.istint.server;
+package de.mp.istint.server.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;

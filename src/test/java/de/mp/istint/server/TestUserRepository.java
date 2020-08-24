@@ -7,13 +7,15 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import de.mp.istint.server.model.User;
+
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
 public class TestUserRepository {
 
     @Test
     public void testAdd(@Autowired MongoTemplate mongoTemplate) {
-        var u = new User(null, "test");
+        var u = User.builder().name("test").build();
 
         var ret = mongoTemplate.save(u);
 

@@ -1,4 +1,4 @@
-package de.mp.istint.server;
+package de.mp.istint.server.model;
 
 import org.springframework.data.annotation.Id;
 
@@ -15,5 +15,9 @@ public class User {
     @Id
     private String id;
     private String name;
+    private String password;
+    private String email;
+    private String oauth2Provider;
+    private String providerId;
 
 }

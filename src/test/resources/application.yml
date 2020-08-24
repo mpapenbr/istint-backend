@@ -4,12 +4,17 @@ spring:
       host: localhost
       port: 0
       database: springboot-mongo
+  security:
+    user:
+      name: user
+      password: "{noop}password"
 
 logging:
   level:
     root: info
+    de.mp.istint.server: debug
     org.springframework.boot.autoconfigure.mongo.embedded: off
     org.mongodb: off    
-    
+    org.springframework.security.authentication: debug
   pattern:  
     dateformat: "HH:mm:ss.SSS"       
