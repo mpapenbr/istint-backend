@@ -6,9 +6,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import de.mp.istint.server.UserRepository;
 import de.mp.istint.server.exception.ResourceNotFoundException;
 import de.mp.istint.server.model.User;
+import de.mp.istint.server.repository.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     UserRepository appUserService;
 
     @Override
-    
+
     public UserDetails loadUserByUsername(String email)
             throws UsernameNotFoundException {
         User user = appUserService.findOptionalByEmail(email)
@@ -26,7 +26,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return UserPrincipal.create(user);
     }
 
-    
     public UserDetails loadUserById(Long id) {
         throw new ResourceNotFoundException("User", "id", id);
         // User user = appUserService.findById(id).orElseThrow(

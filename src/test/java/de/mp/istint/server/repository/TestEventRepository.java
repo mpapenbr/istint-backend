@@ -1,4 +1,4 @@
-package de.mp.istint.server;
+package de.mp.istint.server.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -19,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.mp.istint.server.model.Event;
 import de.mp.istint.server.model.User;
+import de.mp.istint.server.repository.EventRepository;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -29,7 +30,7 @@ public class TestEventRepository {
     @Autowired
     private EventRepository eventRepository;
 
-    private User demoUser;
+    private User demoUser; 
 
     @BeforeEach
     public void ensureDemoUser() {

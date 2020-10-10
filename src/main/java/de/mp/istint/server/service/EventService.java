@@ -1,10 +1,11 @@
-package de.mp.istint.server;
+package de.mp.istint.server.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.mp.istint.server.model.Event;
+import de.mp.istint.server.repository.EventRepository;
 import de.mp.istint.server.security.UserPrincipal;
 import de.mp.istint.server.util.AppUserUtil;
 import lombok.extern.slf4j.Slf4j;

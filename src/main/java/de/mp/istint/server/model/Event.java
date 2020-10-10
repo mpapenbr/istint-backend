@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event {
+
     @Id
     public String id;
+
     public String name;
     public String carName;
     public String trackName;

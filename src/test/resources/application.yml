@@ -8,6 +8,15 @@ spring:
     user:
       name: user
       password: "{noop}password"
+  
+    # oauth2:
+    #   client:
+    #     registration:
+    #       google:
+    #         client-id: something
+    #         client-secret: something-secret
+            #redirect-uri: "daKommstDuNichtDrauf"
+            #redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
 
 logging:
   level:
@@ -16,5 +25,8 @@ logging:
     org.springframework.boot.autoconfigure.mongo.embedded: off
     org.mongodb: off    
     org.springframework.security.authentication: debug
+    org.springframework: info
+  file:
+    name: tests.log
   pattern:  
     dateformat: "HH:mm:ss.SSS"       

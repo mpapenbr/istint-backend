@@ -1,4 +1,4 @@
-package de.mp.istint.server;
+package de.mp.istint.server.repository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

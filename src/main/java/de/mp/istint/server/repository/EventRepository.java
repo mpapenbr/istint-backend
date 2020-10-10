@@ -1,4 +1,4 @@
-package de.mp.istint.server;
+package de.mp.istint.server.repository;
 
 import java.util.List;
 

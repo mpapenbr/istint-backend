@@ -31,10 +31,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import de.mp.istint.server.model.Event;
 import de.mp.istint.server.model.User;
+import de.mp.istint.server.repository.EventRepository;
 
-// @AutoConfigureMockMvc
-// @WithMockUser(username = "demoUser")
-// @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS) // dann kann man auch Spring-Autowires in @BeforeAll verwenden.
 @WithUserDetails(value = "demoUser", userDetailsServiceBeanName = "testUserDetails")
@@ -130,6 +128,30 @@ public class TestEventController {
         var check = om.readValue(result.getResponse().getContentAsString(), Event.class);
         assertTrue(new ReflectionEquals(event, "id", "owner").matches(check));
         assertTrue(new ReflectionEquals(demoUser, "id").matches(check.getOwner()));
+        // assertEquals(demoUser, check.getOwner());
+    }
+
+    @Test
+    public void testRead() throws Exception {
+
+        var event = Event.builder().carName("Car").trackName("track").name("DemoEvent").build();
+
+        String data = om.writeValueAsString(event);
+        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.post("/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(data))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+        // re-read the data and compare
+
+        result = this.mockMvc.perform(MockMvcRequestBuilders.get("/events"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+        // var check = om.readValue(result.getResponse().getContentAsString(), Event[].class);
+        // assertTrue(new ReflectionEquals(event, "id", "owner").matches(check[0]));
+        // assertTrue(new ReflectionEquals(demoUser, "id").matches(check[0].getOwner()));
         // assertEquals(demoUser, check.getOwner());
     }
 }

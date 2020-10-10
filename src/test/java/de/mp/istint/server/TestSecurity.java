@@ -1,5 +1,8 @@
 package de.mp.istint.server;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -14,8 +17,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithSecurityContext;
+import org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -35,7 +42,9 @@ import de.mp.istint.server.model.User;
 // @WebAppConfiguration // ? klären, was das macht
 // @ExtendWith(SpringExtension.class)
 @SpringBootTest
+
 @TestInstance(Lifecycle.PER_CLASS) // dann kann man auch Spring-Autowires in @BeforeAll verwenden.
+@TestExecutionListeners(value = WithSecurityContextTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public class TestSecurity {
 
     @TestConfiguration
@@ -58,6 +67,14 @@ public class TestSecurity {
         public UserDetailsService myUserDetailsService() {
             return new MyTestUserDetailsService();
         }
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @WithSecurityContext(factory = WithMockCustomUserSecurityContextFactory.class, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @interface WithSuperClassWithSecurityContext {
+
+        // String username() default "demoUser";
+
     }
 
     @Autowired
@@ -83,12 +100,21 @@ public class TestSecurity {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
+
                 .build();
         mongoTemplate.dropCollection(Event.class);
 
     }
 
+    @WithSuperClassWithSecurityContext
+    @WithUserDetails(value = "demoUser", userDetailsServiceBeanName = "dings")
     @Test
+    public void testSomething() {
+        System.out.println("TestSecurity.testSomething()");
+    }
+
+    @Test
+    @WithSuperClassWithSecurityContext
     @WithUserDetails(value = "demoUser", userDetailsServiceBeanName = "dings")
     public void testCreate() throws Exception {
 

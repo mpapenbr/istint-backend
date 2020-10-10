@@ -6,6 +6,15 @@ spring:
       password: example
       database: local
       authentication-database: admin
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 173218145716-u9icomg8g2ms2fccrpboud31qk8ciisb.apps.googleusercontent.com
+            client-secret: N4n2mRBJz0u1k0DNo8J4OrzS
+            #redirect-uri: "daKommstDuNichtDrauf"
+            #redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
   # security:
   #   user:
   #     name: user
@@ -16,3 +25,4 @@ logging:
     de.mp.istint.server: debug
     org.springframework.data: info      
     org.springframework.security.authentication: debug
+    org.springframework.security: debug
