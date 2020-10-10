@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ServerApplication<server>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            // "console": "internalConsole",
+            "mainClass": "de.mp.istint.server.ServerApplication",
+            "projectName": "server",
+            "args": "",
+            "vmArgs": "-Dspring.profiles.active=default,secrets"
+        }
+    ]
+}

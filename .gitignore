@@ -6,6 +6,8 @@ target/
 !**/src/test/**/target/
 .mvn
 *.log
+**/application-secrets.yml
+
 
 ### STS ###
 .apt_generated
