@@ -11,8 +11,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 173218145716-u9icomg8g2ms2fccrpboud31qk8ciisb.apps.googleusercontent.com
-            client-secret: N4n2mRBJz0u1k0DNo8J4OrzS
+            client-id:  enter-google-client-id-here
+            client-secret: enter-client-secret-here
             #redirect-uri: "daKommstDuNichtDrauf"
             #redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
   # security:
