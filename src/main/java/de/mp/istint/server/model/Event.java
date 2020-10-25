@@ -1,5 +1,7 @@
 package de.mp.istint.server.model;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
@@ -21,7 +23,9 @@ public class Event {
     public String carName;
     public String trackName;
     public String raceData;
-
+    public Object rawData;
+    public String ownerId;
+    public LocalDateTime lastModified;
     @DBRef()
     private User owner;
 

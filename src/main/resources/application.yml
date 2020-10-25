@@ -26,3 +26,12 @@ logging:
     org.springframework.data: info      
     org.springframework.security.authentication: debug
     org.springframework.security: debug
+
+istint:
+  app:
+    piep: pups
+    redirects: 
+      - "a"
+      - "b"
+
+
