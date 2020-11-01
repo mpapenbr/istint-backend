@@ -1,6 +1,7 @@
 package de.mp.istint.server.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +29,10 @@ public class EventService {
         event.setLastModified(LocalDateTime.now());
         return eventRepository.save(event);
     }
+
+    public List<Event> loadMyEvents() {
+        AccessToken userToken = appUserUtil.getCurrentUser();
+        return eventRepository.findByOwnerId(userToken.getSubject());
+    }
+
 }
