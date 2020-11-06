@@ -10,7 +10,8 @@ import de.mp.istint.server.model.User;
 
 @RepositoryRestResource(exported = false)
 public interface UserRepository extends MongoRepository<User, String> {
+    Optional<User> findOptionalById(@Param("id") String name);
+
     Optional<User> findOptionalByName(@Param("name") String name);
 
-    Optional<User> findOptionalByEmail(String email);
 }

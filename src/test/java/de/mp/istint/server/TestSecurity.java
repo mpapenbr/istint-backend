@@ -91,7 +91,7 @@ public class TestSecurity {
     @BeforeAll
     public void setupOnce() {
         mongoTemplate.dropCollection(User.class);
-        var demoUser = mongoTemplate.save(User.builder().name("demoUser").email("demoUser").build());
+        var demoUser = mongoTemplate.save(User.builder().name("demoUser").build());
 
     }
 
