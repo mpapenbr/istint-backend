@@ -8,12 +8,10 @@ import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import de.mp.istint.server.model.User;
 
 public class UserPrincipal implements
-        OAuth2User,
         UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
@@ -33,15 +31,9 @@ public class UserPrincipal implements
                 authorities);
     }
 
-    public static UserPrincipal create(User user, Map<String, Object> attributes) {
-        UserPrincipal userPrincipal = UserPrincipal.create(user);
-        userPrincipal.setAttributes(attributes);
-        return userPrincipal;
-    }
-
     @Override
     public String getPassword() {
-        return currentUser.getPassword();
+        return "hasNoPassword";
     }
 
     @Override
@@ -72,20 +64,6 @@ public class UserPrincipal implements
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Map<String, Object> attributes) {
-        this.attributes = attributes;
-    }
-
-    @Override
-    public String getName() {
-        return currentUser.getName();
     }
 
     public User getUser() {

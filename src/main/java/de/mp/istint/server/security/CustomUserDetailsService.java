@@ -18,10 +18,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
 
-    public UserDetails loadUserByUsername(String email)
+    public UserDetails loadUserByUsername(String id)
             throws UsernameNotFoundException {
-        User user = appUserService.findOptionalByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email : " + email));
+        User user = appUserService.findOptionalById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id : " + id));
 
         return UserPrincipal.create(user);
     }
