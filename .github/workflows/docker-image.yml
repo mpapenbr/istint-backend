@@ -1,6 +1,7 @@
 name: Build image on Tag
 on:
   push:
+    branches: [mpapenbr/issue4]
     tags:
       - "*"
   workflow_dispatch:
