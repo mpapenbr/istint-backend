@@ -36,6 +36,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           path: docker
           registry: docker.pkg.github.com
-          repository: mpapenbr/istint/istint-backend
+          repository: mpapenbr/istint-backend/istint-backend
           tags: test
           #tag_with_ref: true
