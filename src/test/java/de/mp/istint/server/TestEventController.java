@@ -5,15 +5,16 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -58,9 +59,9 @@ public class TestEventController {
                     .httpBasic();
         }
 
-        public UserDetailsService myUserDetailsService() {
-            return new MyTestUserDetailsService();
-        }
+        // public UserDetailsService myUserDetailsService() {
+        //     return new MyTestUserDetailsService();
+        // }
     }
 
     @BeforeEach
@@ -76,17 +77,19 @@ public class TestEventController {
 
     @WithMockUser
     @Test
-    void testPublic() throws Exception {
+    void testAllEvents() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/events", UUID.randomUUID().toString()))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @WithMockUser
     @Test
-    void testProtectedNoUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/private/some"))
+    @Disabled
+    void testOwnEvents() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/events/own"))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @WithAnonymousUser
@@ -97,12 +100,16 @@ public class TestEventController {
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
+    // @WithMyOwnStuff(id = "12")
     @WithMockUser
     @Test
-    void testProtectedWithSomeMockUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/private/some"))
+    @Disabled
+    void testCreateWithOwnStuff() throws Exception {
+        Event e = Event.builder().build();
+        mockMvc.perform(MockMvcRequestBuilders.post("/events").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(e)))
+
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
 }
