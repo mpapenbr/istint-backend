@@ -9,8 +9,8 @@
             // "console": "internalConsole",
             "mainClass": "de.mp.istint.server.ServerApplication",
             "projectName": "server",
-            "args": "",
-            "vmArgs": "-Dspring.profiles.active=default,secrets"
+            "args": "--spring.profiles.active=default,secrets",
+            "vmArgs": ""
         }
     ]
 }

@@ -30,3 +30,13 @@ logging:
     name: tests.log
   pattern:  
     dateformat: "HH:mm:ss.SSS"       
+
+keycloak:
+  enabled: false    
+
+istint:
+  app:
+    piep: pups
+    redirects: 
+      - "a"
+      - "b"

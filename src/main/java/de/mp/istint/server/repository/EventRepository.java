@@ -15,4 +15,6 @@ public interface EventRepository extends MongoRepository<Event, String> {
 
     List<Event> findByOwner(/* @Param("owner") */ User owner);
 
+    List<Event> findByOwnerId(@Param("ownerId") String ownerId);
+
 }

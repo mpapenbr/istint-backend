@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.mp.istint.server.model.Event;
 import de.mp.istint.server.model.User;
-import de.mp.istint.server.repository.EventRepository;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
@@ -30,7 +35,7 @@ public class TestEventRepository {
     @Autowired
     private EventRepository eventRepository;
 
-    private User demoUser; 
+    private User demoUser;
 
     @BeforeEach
     public void ensureDemoUser() {
@@ -125,4 +130,35 @@ public class TestEventRepository {
         var expect = Arrays.asList(new Object[] { null, null });
         assertEquals(expect, check.stream().map(item -> item.getOwner()).collect(Collectors.toList()));
     }
+
+    @Test
+    public void testWithDummyData() throws Exception {
+        ObjectMapper om = new ObjectMapper();
+        var rawData = DummyRawData.builder().stints(List.of("s1", "s2")).car(Car.builder().id("13283").name("someCar").build()).build();
+        var demoEvent = Event.builder().carName("Car").trackName("track").name("DemoEvent").owner(demoUser).rawData(rawData).build();
+
+        mongoTemplate.save(demoEvent);
+
+        var check = eventRepository.findById(demoEvent.id);
+        System.out.println("TestEventRepository.testWithDummyData() " + check.toString());
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class DummyRawData {
+        List<String> stints;
+        Car car;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class Car {
+        String id;
+        String name;
+    }
+
 }
