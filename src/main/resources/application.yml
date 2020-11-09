@@ -6,15 +6,7 @@ spring:
       password: see application-secrets.yml
       database: see application-secrets.yml
       authentication-database: see application-secrets.yml
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: see application-secrets.yml
-            client-secret: see application-secrets.yml
-            #redirect-uri: "daKommstDuNichtDrauf"
-            #redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
+  
   # security:
   #   user:
   #     name: user
