@@ -24,6 +24,12 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
     private final long MAX_AGE_SECS = 3600;
     private ApplicationContext applicationContext;
 
+    /**
+     * Note: The CORS-confgiruation via this method is essential. This setting is handled by Spring
+     * MVC which is called prior to Spring Security CORS.
+     * see https://docs.spring.io/spring-security/site/docs/5.4.1/reference/html5/#cors
+     * 
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

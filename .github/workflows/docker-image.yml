@@ -1,7 +1,7 @@
 name: Build image on Tag
 on:
   push:
-    branches: [mpapenbr/issue4]
+    # branches: [mpapenbr/issue4]
     tags:
       - "*"
   workflow_dispatch:
@@ -37,5 +37,5 @@ jobs:
           path: docker
           registry: docker.pkg.github.com
           repository: mpapenbr/istint-backend/istint-backend
-          tags: test
-          #tag_with_ref: true
+          # tags: test
+          tag_with_ref: true
