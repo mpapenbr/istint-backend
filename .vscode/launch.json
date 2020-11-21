@@ -9,7 +9,7 @@
             // "console": "internalConsole",
             "mainClass": "de.mp.istint.server.ServerApplication",
             "projectName": "server",
-            "args": "--spring.profiles.active=default,secrets",
+            "args": "--spring.profiles.active=default,local",
             "vmArgs": ""
         }
     ]

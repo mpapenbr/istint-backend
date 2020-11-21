@@ -7,7 +7,7 @@ target/
 .mvn
 *.log
 *.log.*.gz
-**/application-secrets.yml
+**/application-local.yml
 
 
 ### STS ###

@@ -1,7 +1,5 @@
 package de.mp.istint.server.config;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
@@ -19,9 +17,6 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @ConditionalOnProperty(name = "keycloak.enabled", havingValue = "true")
 @KeycloakConfiguration
@@ -45,33 +40,10 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                         .anyRequest().authenticated())
                 .csrf(c -> c.disable())
 
-                .cors()
+                .cors() // note: this setting is not needed here since we use Spring MVC CORS (see Spring Security doc https://docs.spring.io/spring-security/site/docs/5.4.1/reference/html5/#cors)
 
-        //        .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        //         .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-        //        .csrf(c -> c.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-        //        .logout(l -> l.logoutSuccessUrl("/").permitAll())
-        // .oauth2Login(o -> o.failureHandler((request, response, exception) -> {
-        //     request.getSession().setAttribute("error.message", exception.getMessage());
-        //     handler.onAuthenticationFailure(request, response, exception);
-        // }));
         ;
         // @formatter:on
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        // configuration.setAllowedOrigins(List.of("http://host.docker.internal:8080", "http://host.docker.internal:3000", "http://host.docker.internal:8180"));
-        configuration.setAllowedMethods(List.of("*"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
     @Bean
