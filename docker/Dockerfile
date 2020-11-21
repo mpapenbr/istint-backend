@@ -8,6 +8,7 @@ FROM adoptopenjdk:11-jre-hotspot
 WORKDIR application
 COPY --from=builder application/dependencies/ ./
 COPY --from=builder application/snapshot-dependencies/ ./
+RUN true
 COPY --from=builder application/spring-boot-loader/ ./
 COPY --from=builder application/application/ ./
 EXPOSE 8080
