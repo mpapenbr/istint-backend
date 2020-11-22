@@ -4,19 +4,11 @@ spring:
       host: localhost
       port: 0
       database: springboot-mongo
+  # this is to prevent spring from generating passwords for the default user 'user'
   security:
     user:
       name: user
       password: "{noop}password"
-  
-    # oauth2:
-    #   client:
-    #     registration:
-    #       google:
-    #         client-id: something
-    #         client-secret: something-secret
-            #redirect-uri: "daKommstDuNichtDrauf"
-            #redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
 
 logging:
   level:
@@ -34,9 +26,3 @@ logging:
 keycloak:
   enabled: false    
 
-istint:
-  app:
-    piep: pups
-    redirects: 
-      - "a"
-      - "b"

@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +15,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import de.mp.istint.server.config.WithMyOwnUser;
 import de.mp.istint.server.model.Event;
 
 /*
@@ -47,21 +46,15 @@ public class TestEventController {
     private MongoTemplate mongoTemplate;
 
     @TestConfiguration
+
     @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
     static class MyContext extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests()
-                    .antMatchers("/**")
-                    .authenticated()
-
-                    .and()
-                    .httpBasic();
+            http.authorizeRequests(ar -> ar.antMatchers("/**").authenticated())
+                    .csrf(c -> c.disable()); // do this or have any POST have crsf() called in mock
         }
 
-        // public UserDetailsService myUserDetailsService() {
-        //     return new MyTestUserDetailsService();
-        // }
     }
 
     @BeforeEach
@@ -75,21 +68,15 @@ public class TestEventController {
 
     }
 
-    @WithMockUser
+    @WithMyOwnUser(id = "12")
     @Test
-    void testAllEvents() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/events", UUID.randomUUID().toString()))
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @WithMockUser
-    @Test
-    @Disabled
-    void testOwnEvents() throws Exception {
+    void testOwnEventsWithMyOwnStuff() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/events/own"))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty());
+        // should be empty
+
     }
 
     @WithAnonymousUser
@@ -97,19 +84,78 @@ public class TestEventController {
     void testProtectedAnonymous() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/events"))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-    // @WithMyOwnStuff(id = "12")
-    @WithMockUser
+    @WithMyOwnUser(id = "12")
     @Test
-    @Disabled
-    void testCreateWithOwnStuff() throws Exception {
-        Event e = Event.builder().build();
+    void testCreateAndRead() throws Exception {
+        Event e = Event.builder().id(UUID.randomUUID().toString()).build();
         mockMvc.perform(MockMvcRequestBuilders.post("/events").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(e)))
-
-                .andDo(MockMvcResultHandlers.print())
+                // .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isCreated());
+        // verify we find it again
+        mockMvc.perform(MockMvcRequestBuilders.get("/events/own"))
+                // .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.events").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.events[0].ownerId").value("12"));
+    }
+
+    @WithMyOwnUser(id = "12")
+    @Test
+    void testOverrideOwnContent() throws Exception {
+        // persist one entry with user id 34
+        var myEvent = Event.builder().id(UUID.randomUUID().toString()).carName("Car").trackName("track").name("DemoEvent").ownerId("12").build();
+        mongoTemplate.save(myEvent);
+
+        Event myEventUpdate = Event.builder().carName("OtherCar").id(myEvent.getId()).build();
+        mockMvc.perform(MockMvcRequestBuilders.put("/events/{id}", myEvent.getId()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(myEventUpdate)))
+                // .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.carName").value("OtherCar"));
+
+    }
+
+    @WithMyOwnUser(id = "12")
+    @Test
+    void testDoNotOverrideOtherUsersContent() throws Exception {
+        // persist one entry with user id 34
+        var otherEvent = Event.builder().id("001").carName("Car").trackName("track").name("DemoEvent").ownerId("34").build();
+        mongoTemplate.save(otherEvent);
+
+        Event myEvent = Event.builder().id("001").build();
+        mockMvc.perform(MockMvcRequestBuilders.post("/events").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsString(myEvent)))
+                // .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+
+    }
+
+    @WithMyOwnUser(id = "12")
+    @Test
+    void testDeleteOwnContent() throws Exception {
+        // persist one entry with user id 34
+        var myEvent = Event.builder().id(UUID.randomUUID().toString()).carName("Car").trackName("track").name("DemoEvent").ownerId("12").build();
+        mongoTemplate.save(myEvent);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/events/{id}", myEvent.getId()))
+                // .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+    }
+
+    @WithMyOwnUser(id = "12")
+    @Test
+    void testDoNotDeleteOtherUsersContent() throws Exception {
+        // persist one entry with user id 34
+        var otherEvent = Event.builder().id(UUID.randomUUID().toString()).carName("Car").trackName("track").name("DemoEvent").ownerId("34").build();
+        mongoTemplate.save(otherEvent);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/events/{id}", otherEvent.getId()))
+                // .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+
     }
 
 }

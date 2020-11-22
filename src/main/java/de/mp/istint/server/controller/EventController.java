@@ -54,6 +54,17 @@ public class EventController {
     }
 
     @Primary
+    @RequestMapping(method = RequestMethod.DELETE, path = "/events/{id}")
+    public ResponseEntity<Void> ownPutMethod(@PathVariable UUID id, Principal principal, Authentication auth) {
+        log.debug("ownDelteMethod begin");
+        eventService.delete(id.toString());
+        return ResponseEntity
+                .noContent()
+                .build();
+
+    }
+
+    @Primary
     @RequestMapping(method = RequestMethod.GET, path = "/events/own")
     public ResponseEntity<CollectionModel<Event>> ownEvents(Principal principal, Authentication auth) {
 

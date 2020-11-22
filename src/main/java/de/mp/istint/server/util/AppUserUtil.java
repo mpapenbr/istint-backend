@@ -1,32 +1,31 @@
 package de.mp.istint.server.util;
 
-import java.util.Optional;
-
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import de.mp.istint.server.security.UserPrincipal;
+import de.mp.istint.server.model.User;
 
+@Profile("prod")
 @Component
-public class AppUserUtil {
+public class AppUserUtil implements IAppUserUtil {
 
-    public Optional<UserPrincipal> getCurrentUserOld() {
+    public User getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return Optional.ofNullable(auth)
-                .map(a -> a.getPrincipal())
-                .filter(item -> item instanceof UserPrincipal)
-                .map(item -> (UserPrincipal) item);
+        if (auth instanceof KeycloakAuthenticationToken) {
+            KeycloakAuthenticationToken keycloakAuthenticationToken = (KeycloakAuthenticationToken) auth;
+            AccessToken accessToken = keycloakAuthenticationToken.getAccount().getKeycloakSecurityContext().getToken();
+            return User.builder()
+                    .id(accessToken.getSubject())
+                    .name(accessToken.getPreferredUsername())
+                    .details(auth.getDetails())
+                    .build();
+        }
 
-    }
-
-    public AccessToken getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        KeycloakAuthenticationToken keycloakAuthenticationToken = (KeycloakAuthenticationToken) auth;
-        AccessToken accessToken = keycloakAuthenticationToken.getAccount().getKeycloakSecurityContext().getToken();
-        return accessToken;
+        return null;
 
     }
 }
