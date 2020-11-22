@@ -1,13 +1,17 @@
 package de.mp.istint.server.config;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
 import de.mp.istint.server.model.User;
-import de.mp.istint.server.security.UserPrincipal;
 
 /**
  * This is the most flexible way of getting a customized SecurityContext without interferences from
@@ -20,17 +24,19 @@ import de.mp.istint.server.security.UserPrincipal;
  * @author mpapenbr
  *
  */
-public class WithMyOwnCustomizedSecurityContextFactory implements WithSecurityContextFactory<WithMyOwnStuff> {
+
+public class WithMyOwnCustomizedSecurityContextFactory implements WithSecurityContextFactory<WithMyOwnUser> {
 
     @Override
-    public SecurityContext createSecurityContext(WithMyOwnStuff ownStuff) {
+    public SecurityContext createSecurityContext(WithMyOwnUser ownStuff) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
-        UserPrincipal principal = UserPrincipal.create(User.builder()
+        User user = User.builder()
                 .name(ownStuff.username())
                 .id(ownStuff.id())
-                .build());
-        Authentication auth = new UsernamePasswordAuthenticationToken(principal, "dummyPassword", principal.getAuthorities());
+                .build();
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        Authentication auth = new UsernamePasswordAuthenticationToken(user, "password", authorities);
         context.setAuthentication(auth);
         return context;
     }
