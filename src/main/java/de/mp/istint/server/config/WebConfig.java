@@ -5,8 +5,10 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -16,6 +18,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import de.mp.istint.server.config.data.CorsData;
+
 @Configuration
 @EnableWebMvc
 @Profile({ "dev", "prod" })
@@ -23,6 +27,12 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 
     private final long MAX_AGE_SECS = 3600;
     private ApplicationContext applicationContext;
+
+    @Bean
+    @ConfigurationProperties("istint.cors")
+    public CorsData corsData() {
+        return new CorsData();
+    }
 
     /**
      * Note: The CORS-confgiruation via this method is essential. This setting is handled by Spring
@@ -32,11 +42,12 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        CorsData cData = corsData();
         registry.addMapping("/**")
-                .allowedOrigins("*")
+                .allowedOrigins(cData.getAllowedOrigins().toArray(new String[] {}))
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true)
+                .allowCredentials(cData.isAllowCredentials())
                 .maxAge(MAX_AGE_SECS);
     }
 

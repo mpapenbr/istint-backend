@@ -34,6 +34,7 @@ public class EventService {
             return eventRepository.save(event);
         } else {
             if (inDb.get().getOwnerId().equals(user.getId())) {
+                event.setOwnerId(user.getId());
                 event.setLastModified(LocalDateTime.now());
                 return eventRepository.save(event);
             }
