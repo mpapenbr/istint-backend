@@ -10,6 +10,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * This class models an Event for computing Stints.
+ * TODO: consider renaming this and put it into a separate collection.
+ */
 @Builder
 @Data
 @AllArgsConstructor

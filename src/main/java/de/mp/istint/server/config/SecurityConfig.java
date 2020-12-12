@@ -38,6 +38,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         // @formatter:off
         http
                 .authorizeRequests(a -> a.antMatchers("/", "/error").permitAll()
+                        //TODO: Temporary for testing. Remove for production
+                        .antMatchers("/racelog/**").permitAll()
                         //.antMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated())
                 .csrf(c -> c.disable())
