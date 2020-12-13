@@ -6,7 +6,12 @@ spring:
       password: see application-secrets.yml
       database: see application-secrets.yml
       authentication-database: see application-secrets.yml
-  
+server:
+  compression:
+    enabled: true
+    mime-types:
+    - application/json  
+    min-response-size: 1024
   # security:
   #   user:
   #     name: user

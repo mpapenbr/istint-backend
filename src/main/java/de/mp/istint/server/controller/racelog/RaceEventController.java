@@ -8,17 +8,24 @@ import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.service.racelog.NewRecordingRequestDto;
 import de.mp.istint.server.service.racelog.RaceEventService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RepositoryRestController() // Info: der "normale" RestController reicht nicht aus (mit dem geht nur das, was hier definiert ist)
+@RepositoryRestController // Info: der "normale" RestController reicht nicht aus (mit dem geht nur das, was hier definiert ist)
+
+/**
+ * if we would add @RestController here the generated endpoints by spring data would not be visible
+ * anymore.
+ */
 public class RaceEventController {
 
     @Autowired
@@ -28,13 +35,32 @@ public class RaceEventController {
     private EntityLinks entityLinks;
 
     @Primary
-    @RequestMapping(method = RequestMethod.POST, path = "/racelog/events", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UUID> requestRecording(@RequestBody NewRecordingRequestDto dto) {
-        log.debug("ownSaveMethod begin");
+    @RequestMapping(method = RequestMethod.POST, path = "/raceevents/request", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> requestRecording(@RequestBody NewRecordingRequestDto dto) {
+        log.debug("request event id");
 
-        UUID ret = raceEventService.requestEventId(dto);
+        String ret = raceEventService.requestEventId(dto);
         return ResponseEntity
                 .created(entityLinks.linkToItemResource(RaceEvent.class, ret).toUri())
+                .build();
+    }
+
+    @Primary
+    @RequestMapping(method = RequestMethod.DELETE, path = "/raceevents/{id}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable UUID id) {
+        log.debug("ownDelete begin");
+        raceEventService.delete(id.toString());
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/raceevents/{id}/racedata", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addLogData(@PathVariable UUID id, @RequestBody RaceDataContainer data) {
+
+        raceEventService.addData(id.toString(), data);
+        return ResponseEntity
+                .ok()
                 .build();
     }
 }

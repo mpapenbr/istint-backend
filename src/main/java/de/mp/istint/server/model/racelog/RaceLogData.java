@@ -1,10 +1,5 @@
 package de.mp.istint.server.model.racelog;
 
-import java.util.UUID;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.lang.NonNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,11 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RaceLogData {
-    @Id
-    UUID id;
-
-    @NonNull
-    UUID raceEventId;
 
     int[] carIdxPosition;
     int[] carIdxClassPosition;
@@ -31,8 +21,8 @@ public class RaceLogData {
     int[] carIdxLapCompleted;
     boolean[] carIdxOnPitRoad;
 
-    long sessionTime;
-    long sessionTimeRemain;
+    float sessionTime;
+    float sessionTimeRemain;
     long sessionTimeOfDay;
 
 }

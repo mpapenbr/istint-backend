@@ -2,14 +2,15 @@ package de.mp.istint.server.repository.racelog;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RestResource;
 
 import de.mp.istint.server.model.racelog.RaceEvent;
 
-public interface RaceEventRepository extends MongoRepository<RaceEvent, UUID> {
+@RestResource(path = "raceevents")
+public interface RaceEventRepository extends MongoRepository<RaceEvent, String> {
 
     List<RaceEvent> findBySessionId(@Param("sessionId") Long sessionId);
 

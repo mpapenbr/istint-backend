@@ -29,29 +29,29 @@ public class TestRaceEventRepository {
 
     @Test
     public void shouldCreateEvent() {
-        raceEventRepository.save(RaceEvent.builder().id(UUID.randomUUID()).build());
+        raceEventRepository.save(RaceEvent.builder().id(UUID.randomUUID().toString()).build());
     }
 
     @Test
     public void shouldFindExistingEvent() {
         UUID id = UUID.randomUUID();
-        RaceEvent entry = raceEventRepository.save(RaceEvent.builder().id(id).build());
-        Optional<RaceEvent> result = raceEventRepository.findById(id);
+        RaceEvent entry = raceEventRepository.save(RaceEvent.builder().id(id.toString()).build());
+        Optional<RaceEvent> result = raceEventRepository.findById(id.toString());
         assertEquals(Optional.of(entry), result);
     }
 
     @Test
     public void shouldDetectNonExistingEvent() {
         UUID id = UUID.randomUUID();
-        Optional<RaceEvent> result = raceEventRepository.findById(id);
+        Optional<RaceEvent> result = raceEventRepository.findById(id.toString());
         assertTrue(result.isEmpty());
     }
 
     @Test
     public void shouldFindByEntries() {
-        RaceEvent event1 = raceEventRepository.save(RaceEvent.builder().ownerId("test").sessionId(1L).id(UUID.fromString("00000000-0000-0000-0000-000000000001")).build());
-        RaceEvent event2 = raceEventRepository.save(RaceEvent.builder().ownerId("test").sessionId(2L).id(UUID.fromString("00000000-0000-0000-0000-000000000002")).build());
-        RaceEvent event3 = raceEventRepository.save(RaceEvent.builder().ownerId("othertest").sessionId(2L).id(UUID.fromString("00000000-0000-0000-0000-000000000003")).build());
+        RaceEvent event1 = raceEventRepository.save(RaceEvent.builder().ownerId("test").sessionId(1L).id("00000000-0000-0000-0000-000000000001").build());
+        RaceEvent event2 = raceEventRepository.save(RaceEvent.builder().ownerId("test").sessionId(2L).id("00000000-0000-0000-0000-000000000002").build());
+        RaceEvent event3 = raceEventRepository.save(RaceEvent.builder().ownerId("othertest").sessionId(2L).id("00000000-0000-0000-0000-000000000003").build());
 
         List<RaceEvent> result = raceEventRepository.findBySessionId(0L);
         assertTrue(result.isEmpty());

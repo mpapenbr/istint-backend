@@ -1,7 +1,6 @@
 package de.mp.istint.server.model.racelog;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 
@@ -19,8 +18,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RaceEvent {
+    /**
+     * holds the UUID
+     */
     @Id
-    public UUID id;
+    public String id;
     /**
      * 
      */

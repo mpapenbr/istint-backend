@@ -79,6 +79,20 @@ public class TestEventController {
 
     }
 
+    @WithMyOwnUser(id = "12")
+    @Test
+    void testAllEventsWithMyOwnStuff() throws Exception {
+        // Note: even if both /events and /events/own have no "real" results, the response differs. Here we get an empty _embedded events. 
+        // In the above test we just get no result
+        mockMvc.perform(MockMvcRequestBuilders.get("/events"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.events").isEmpty());
+        // should be empty
+
+    }
+
     @WithAnonymousUser
     @Test
     void testProtectedAnonymous() throws Exception {
@@ -142,6 +156,20 @@ public class TestEventController {
         mockMvc.perform(MockMvcRequestBuilders.delete("/events/{id}", myEvent.getId()))
                 // .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+    }
+
+    @WithMyOwnUser(id = "12")
+    @Test
+    void testReadOwnContentViaGet() throws Exception {
+        // persist one entry with user id 34
+        var myEvent = Event.builder().id(UUID.randomUUID().toString()).carName("Car").trackName("track").name("DemoEvent").ownerId("12").build();
+        mongoTemplate.save(myEvent);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/events/{id}", myEvent.getId()))
+                // .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("DemoEvent"));
 
     }
 
