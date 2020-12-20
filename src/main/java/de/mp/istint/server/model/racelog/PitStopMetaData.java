@@ -24,6 +24,7 @@ public class PitStopMetaData {
     @NonNull
     String raceEventId;
 
+    float sessionTime;
     // @NonNull
     PitStopData data;
 

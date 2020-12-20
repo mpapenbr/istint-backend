@@ -17,11 +17,13 @@ import lombok.NoArgsConstructor;
 public class DriverMetaData {
     @Id
     UUID id;
-    
+
     @NonNull
     String raceEventId;
-    
+
+    float sessionTime;
+
     // @NonNull
     DriverData data;
-    
+
 }

@@ -110,6 +110,7 @@ public class RaceEventService {
                         .map(p -> PitStopMetaData.builder()
                                 .id(UUID.randomUUID())
                                 .raceEventId(raceEventId)
+                                .sessionTime(sessionTime)
                                 .data(p)
                                 .build())
                         .collect(Collectors.toList())));
@@ -119,6 +120,7 @@ public class RaceEventService {
                         .map(p -> DriverMetaData.builder()
                                 .id(UUID.randomUUID())
                                 .raceEventId(raceEventId)
+                                .sessionTime(sessionTime)
                                 .data(p)
                                 .build())
                         .collect(Collectors.toList())));
@@ -128,6 +130,7 @@ public class RaceEventService {
                         .map(p -> ResultMetaData.builder()
                                 .id(UUID.randomUUID())
                                 .raceEventId(raceEventId)
+                                .sessionTime(sessionTime)
                                 .data(p)
                                 .build())
                         .collect(Collectors.toList())));
