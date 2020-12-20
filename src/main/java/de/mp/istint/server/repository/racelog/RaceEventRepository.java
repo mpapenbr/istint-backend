@@ -6,10 +6,12 @@ import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import de.mp.istint.server.model.racelog.RaceEvent;
 
 @RestResource(path = "raceevents")
+@CrossOrigin
 public interface RaceEventRepository extends MongoRepository<RaceEvent, String> {
 
     List<RaceEvent> findBySessionId(@Param("sessionId") Long sessionId);

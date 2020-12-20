@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
  * if we would add @RestController here the generated endpoints by spring data would not be visible
  * anymore.
  */
+
 public class RaceEventController {
 
     @Autowired
