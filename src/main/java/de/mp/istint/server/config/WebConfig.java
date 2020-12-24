@@ -2,9 +2,12 @@ package de.mp.istint.server.config;
 
 import java.util.List;
 
+import javax.servlet.Filter;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -19,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import de.mp.istint.server.config.data.CorsData;
+import de.mp.istint.server.util.LogRequestFilter;
 
 @Configuration
 @EnableWebMvc
@@ -91,6 +95,11 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    @Bean
+    public Filter logRequestFilter(@Value("${istint.log-request.max-payload-length:1500}") int maxPayloadLength) {
+        return new LogRequestFilter(maxPayloadLength);
     }
 
 }

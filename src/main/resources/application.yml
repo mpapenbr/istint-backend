@@ -11,6 +11,7 @@ server:
     enabled: true
     mime-types:
     - application/json  
+    - application/hal+json
     min-response-size: 1024
   # security:
   #   user:
@@ -21,8 +22,8 @@ logging:
   level:
     de.mp.istint.server: debug
     org.springframework.data: info      
-    org.springframework.security.authentication: debug
-    org.springframework.security: debug
+    #org.springframework.security.authentication: debug
+    #org.springframework.security: debug
 
 
 istint:

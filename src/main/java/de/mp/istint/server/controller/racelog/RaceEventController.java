@@ -64,4 +64,12 @@ public class RaceEventController {
                 .ok()
                 .build();
     }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/raceevents/{id}/dummy", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> dummy(@PathVariable UUID id, @RequestBody RaceDataContainer data) {
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 }
