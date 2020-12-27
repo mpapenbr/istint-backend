@@ -19,9 +19,9 @@ server:
   #     password: "{noop}password"
 
 logging:
-  level:
-    de.mp.istint.server: debug
-    org.springframework.data: info      
+  level:    
+    '[de.mp.istint.server]': debug
+    '[org.springframework.data]': info      
     #org.springframework.security.authentication: debug
     #org.springframework.security: debug
 

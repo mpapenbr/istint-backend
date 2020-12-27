@@ -22,6 +22,8 @@ public class ResultMetaData {
     String raceEventId;
 
     float sessionTime;
+    int sessionNum;
+    int sessionTick;
 
     // @NonNull
     ResultData data;

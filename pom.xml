@@ -136,6 +136,9 @@
 					<layers>
 						<enabled>true</enabled>
 					</layers>
+					<image>
+						<name>mp/istint-backend-local</name>
+					</image>
 				</configuration>
 			</plugin>
 		</plugins>

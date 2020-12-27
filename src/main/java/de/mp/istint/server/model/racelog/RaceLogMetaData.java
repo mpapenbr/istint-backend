@@ -23,6 +23,8 @@ public class RaceLogMetaData {
     String raceEventId;
 
     float sessionTime;
+    int sessionNum;
+    int sessionTick;
     // @NonNull
     RaceLogData data;
 

@@ -2,6 +2,7 @@ package de.mp.istint.server.service.racelog;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -13,12 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.mp.istint.server.model.racelog.DriverMetaData;
+import de.mp.istint.server.model.racelog.EventSummary;
 import de.mp.istint.server.model.racelog.PitStopMetaData;
 import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
 import de.mp.istint.server.model.racelog.ResultMetaData;
 import de.mp.istint.server.repository.racelog.DriverDataRepository;
+import de.mp.istint.server.repository.racelog.LapDataRepository;
 import de.mp.istint.server.repository.racelog.PitStopDataRepository;
 import de.mp.istint.server.repository.racelog.RaceEventRepository;
 import de.mp.istint.server.repository.racelog.RaceLogDataRepository;
@@ -41,6 +44,8 @@ public class RaceEventService {
     private DriverDataRepository driverDataRepository;
     @Autowired
     private ResultDataRepository resultDataRepository;
+    @Autowired
+    private LapDataRepository lapDataRepository;
 
     @Autowired
     private IAppUserUtil appUserUtil;
@@ -90,19 +95,54 @@ public class RaceEventService {
                 pitStopDataRepository.deleteByRaceEventId(id);
                 resultDataRepository.deleteByRaceEventId(id);
                 driverDataRepository.deleteByRaceEventId(id);
+                lapDataRepository.deleteByRaceEventId(id);
             } else {
                 throw new AccessDeniedException("");
             }
         }
     }
 
+    public void clearRaceData(String id) {
+        String userId = getCurrentUserId();
+        Optional<RaceEvent> inDb = raceEventRepository.findById(id);
+        if (inDb.isPresent()) {
+            if (inDb.get().getOwnerId().equals(userId)) {
+                raceLogDataRepository.deleteByRaceEventId(id);
+                pitStopDataRepository.deleteByRaceEventId(id);
+                resultDataRepository.deleteByRaceEventId(id);
+                driverDataRepository.deleteByRaceEventId(id);
+                lapDataRepository.deleteByRaceEventId(id);
+            } else {
+                throw new AccessDeniedException("");
+            }
+        }
+    }
+
+    public List<DriverMetaData> getRaceDrivers(String raceEventId) {
+        return driverDataRepository.findByRaceEventId(raceEventId);
+    }
+
+    public EventSummary getSummary(String raceEventId) {
+        return EventSummary.builder()
+        .sessionSummaries(raceLogDataRepository.getSummaryBySession(raceEventId))
+        .build();
+    }
+
+    public List<RaceLogMetaData> getEventDataAt(String raceEventId, int sessionNum, int sessionTime) {
+        return raceLogDataRepository.findByRaceEventIdAndSessionNumAndSessionTimeBetweenOrderBySessionTimeAsc(raceEventId, sessionNum, (float) (sessionTime - 1), (float) (sessionTime + 0.017));
+    }
+
     public void addData(String raceEventId, RaceDataContainer data) {
         var sessionTime = data.getRaceData().getSessionTime();
+        var sessionTick = data.getRaceData().getSessionTick();
+        var sessionNum = data.getRaceData().getSessionNum();
         RaceLogMetaData dbData = RaceLogMetaData.builder()
                 .id(UUID.randomUUID().toString())
                 .raceEventId(raceEventId)
                 .data(data.getRaceData())
                 .sessionTime(sessionTime)
+                .sessionTick(sessionTick)
+                .sessionNum(sessionNum)
                 .build();
         raceLogDataRepository.save(dbData);
         Optional.ofNullable(data.getPitStops()).ifPresent(item -> pitStopDataRepository.saveAll(
@@ -111,6 +151,8 @@ public class RaceEventService {
                                 .id(UUID.randomUUID())
                                 .raceEventId(raceEventId)
                                 .sessionTime(sessionTime)
+                                .sessionTick(sessionTick)
+                                .sessionNum(sessionNum)
                                 .data(p)
                                 .build())
                         .collect(Collectors.toList())));
@@ -121,6 +163,8 @@ public class RaceEventService {
                                 .id(UUID.randomUUID())
                                 .raceEventId(raceEventId)
                                 .sessionTime(sessionTime)
+                                .sessionTick(sessionTick)
+                                .sessionNum(sessionNum)
                                 .data(p)
                                 .build())
                         .collect(Collectors.toList())));
@@ -131,6 +175,8 @@ public class RaceEventService {
                                 .id(UUID.randomUUID())
                                 .raceEventId(raceEventId)
                                 .sessionTime(sessionTime)
+                                .sessionTick(sessionTick)
+                                .sessionNum(sessionNum)
                                 .data(p)
                                 .build())
                         .collect(Collectors.toList())));

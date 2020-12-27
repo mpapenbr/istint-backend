@@ -14,18 +14,16 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DriverMetaData {
+
+public class LapDataMetaData {
     @Id
     UUID id;
-
     @NonNull
     String raceEventId;
 
     float sessionTime;
     int sessionNum;
     int sessionTick;
-
     // @NonNull
-    DriverData data;
-
+    LapData data;
 }

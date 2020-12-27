@@ -43,6 +43,7 @@ public class LogRequestFilter extends AbstractRequestLoggingFilter {
             sw.stop();
             return sw.toString();
         }).orElse("n.a.");
+
         log.debug(message
                 + (request.getContentLength() > getMaxPayloadLength() ? String.format("(%d of %d)", getMaxPayloadLength(), request.getContentLength()) : "")
                 + " " + duration);

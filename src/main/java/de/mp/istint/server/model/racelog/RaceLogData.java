@@ -17,12 +17,18 @@ public class RaceLogData {
     int[] carIdxPosition;
     int[] carIdxClassPosition;
     float[] carIdxLapDistPct;
+    float[] carIdxLastLapTime;
     int[] carIdxLap;
     int[] carIdxLapCompleted;
+    float[][] carIdxLapSectors;
     boolean[] carIdxOnPitRoad;
 
+    int sessionTick;
     float sessionTime;
     float sessionTimeRemain;
     long sessionTimeOfDay;
+    long sessionFlags;
+    int sessionNum;
+    int sessionState;
 
 }
