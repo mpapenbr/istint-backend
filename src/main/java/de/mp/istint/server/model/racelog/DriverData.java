@@ -1,5 +1,7 @@
 package de.mp.istint.server.model.racelog;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,9 +18,10 @@ public class DriverData {
     String carClassShortName;
     int carNumber;
     String carNumberRaw;
-    String carNameShort;
+    String carShortName;
     String carName;
 
+    @JsonProperty("iRating")
     int iRating;
     boolean spectator;
     int userId;

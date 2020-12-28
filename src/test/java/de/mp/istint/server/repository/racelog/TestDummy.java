@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Accumulators;
@@ -26,6 +28,7 @@ import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import de.mp.istint.server.model.racelog.DriverData;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
 import de.mp.istint.server.model.racelog.SessionSummary;
 
@@ -100,6 +103,16 @@ public class TestDummy {
         res2.forEach(System.out::println);
 
         // System.out.println("TestRaceLogDataRepository.pipelineTest() " + res);
+    }
+
+    @Test
+    public void testJson() throws Exception {
+        ObjectMapper om = new ObjectMapper();
+        om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        String data = "{\"iRating\": 12, \"carIdx\": 333 }";
+        DriverData dd = om.readValue(data, DriverData.class);
+        System.out.println("TestDummy.testJson()" + dd);
+
     }
 
 }
