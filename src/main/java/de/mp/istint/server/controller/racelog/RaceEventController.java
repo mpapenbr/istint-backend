@@ -65,7 +65,7 @@ public class RaceEventController {
     @RequestMapping(method = RequestMethod.GET, path = "/raceevents/{id}/drivers")
     public ResponseEntity<CollectionModel<DriverMetaData>> eventDrivers(@PathVariable UUID id) {
         log.debug("get race event drivers");
-        List<DriverMetaData> data = raceEventService.getRaceDrivers(id.toString());
+        List<DriverMetaData> data = raceEventService.getDriversCondensed(id.toString());
         return ResponseEntity
                 .ok(CollectionModel.of(data));
     }

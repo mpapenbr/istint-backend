@@ -14,5 +14,6 @@ public class RaceDataContainer {
     PitStopData[] pitStops;
     DriverData[] driverData;
     ResultData[] resultData;
+    LapData[] ownLaps;
 
 }

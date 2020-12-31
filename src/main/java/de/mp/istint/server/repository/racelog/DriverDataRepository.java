@@ -11,4 +11,8 @@ public interface DriverDataRepository extends MongoRepository<DriverMetaData, UU
     long deleteByRaceEventId(String raceEventId);
 
     List<DriverMetaData> findByRaceEventId(String raceEventId);
+
+    List<DriverMetaData> findByRaceEventIdOrderBySessionNumAscSessionTimeAsc(String raceEventId);
+
+    List<DriverMetaData> findByRaceEventIdAndSessionNumOrderBySessionTimeAsc(String raceEventId, int sessionNum);
 }

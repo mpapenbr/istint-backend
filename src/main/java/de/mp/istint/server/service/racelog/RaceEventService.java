@@ -1,6 +1,7 @@
 package de.mp.istint.server.service.racelog;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.mp.istint.server.model.racelog.DriverMetaData;
 import de.mp.istint.server.model.racelog.EventSummary;
+import de.mp.istint.server.model.racelog.LapDataMetaData;
 import de.mp.istint.server.model.racelog.PitStopMetaData;
 import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
@@ -122,10 +124,39 @@ public class RaceEventService {
         return driverDataRepository.findByRaceEventId(raceEventId);
     }
 
+    public List<DriverMetaData> getDriversCondensed(String raceEventId) {
+        List<DriverMetaData> data = driverDataRepository.findByRaceEventIdOrderBySessionNumAscSessionTimeAsc(raceEventId);
+        // data.forEach(d -> log.debug("{} {} {} {} {}", d.getId(), d.getData().getCarIdx(), d.getSessionNum(), d.getSessionTime(), d.getData().getUserName()));
+
+        // first: group by sessionNum, carIdx
+
+        List<UUID> toRemoveEntries = new ArrayList<>();
+        var bySessionNum = data.stream().collect(Collectors.groupingBy(item -> item.getSessionNum(), Collectors.toList()));
+        bySessionNum.forEach((k, v) -> {
+            var byCarIdx = v.stream().collect(Collectors.groupingBy(item -> item.getData().getCarIdx(), Collectors.toList()));
+            // now we can collect the superflous entries
+            byCarIdx.values().forEach(carDrivers -> {
+                if (carDrivers.size() > 1) {
+                    for (int i = 1; i < carDrivers.size(); i++) {
+                        // if the userName of the current entry matches the predeccor, remove it.
+                        var current = carDrivers.get(i);
+                        var prev = carDrivers.get(i - 1);
+                        if (prev.getData().getUserName().equals(current.getData().getUserName())) {
+                            toRemoveEntries.add(current.getId());
+                        }
+                    }
+                }
+            });
+        });
+        log.debug("will remove {} entries from original {} entries", toRemoveEntries.size(), data.size());
+        data.removeIf(d -> toRemoveEntries.contains(d.getId()));
+        return data;
+    }
+
     public EventSummary getSummary(String raceEventId) {
         return EventSummary.builder()
-        .sessionSummaries(raceLogDataRepository.getSummaryBySession(raceEventId))
-        .build();
+                .sessionSummaries(raceLogDataRepository.getSummaryBySession(raceEventId))
+                .build();
     }
 
     public List<RaceLogMetaData> getEventDataAt(String raceEventId, int sessionNum, int sessionTime) {
@@ -172,6 +203,18 @@ public class RaceEventService {
         Optional.ofNullable(data.getResultData()).ifPresent(item -> resultDataRepository.saveAll(
                 Arrays.stream(item)
                         .map(p -> ResultMetaData.builder()
+                                .id(UUID.randomUUID())
+                                .raceEventId(raceEventId)
+                                .sessionTime(sessionTime)
+                                .sessionTick(sessionTick)
+                                .sessionNum(sessionNum)
+                                .data(p)
+                                .build())
+                        .collect(Collectors.toList())));
+
+        Optional.ofNullable(data.getOwnLaps()).ifPresent(item -> lapDataRepository.saveAll(
+                Arrays.stream(item)
+                        .map(p -> LapDataMetaData.builder()
                                 .id(UUID.randomUUID())
                                 .raceEventId(raceEventId)
                                 .sessionTime(sessionTime)
