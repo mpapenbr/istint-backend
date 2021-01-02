@@ -22,6 +22,9 @@ public class RaceLogData {
     int[] carIdxLapCompleted;
     float[][] carIdxLapSectors;
     boolean[] carIdxOnPitRoad;
+    float[] carIdxSpeed;
+    float[] carIdxDelta;
+    float[] carIdxDistMeters;
 
     int sessionTick;
     float sessionTime;
@@ -30,5 +33,11 @@ public class RaceLogData {
     long sessionFlags;
     int sessionNum;
     int sessionState;
+
+    float airDensity;
+    float airPressure;
+    float airTemp;
+    float trackTemp;
+    float trackTempCrew;
 
 }

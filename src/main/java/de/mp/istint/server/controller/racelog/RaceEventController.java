@@ -21,6 +21,7 @@ import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
 import de.mp.istint.server.service.racelog.NewRecordingRequestDto;
+import de.mp.istint.server.service.racelog.RaceEventDataDto;
 import de.mp.istint.server.service.racelog.RaceEventService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,6 +50,15 @@ public class RaceEventController {
         return ResponseEntity
                 .created(entityLinks.linkToItemResource(RaceEvent.class, ret).toUri())
                 .build();
+    }
+
+    @Primary
+    @RequestMapping(method = RequestMethod.PUT, path = "/raceevents/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateRaceEventData(@PathVariable UUID id, @RequestBody RaceEventDataDto dto) {
+        log.debug("update raceEvent data");
+        raceEventService.updateRaceEventData(id.toString(), dto);
+        return ResponseEntity.ok().build();
+
     }
 
     @Primary

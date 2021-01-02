@@ -87,6 +87,34 @@ public class RaceEventService {
         }
     }
 
+    public void updateRaceEventData(String id, RaceEventDataDto dto) {
+        String userId = getCurrentUserId();
+        Optional<RaceEvent> inDb = raceEventRepository.findById(id);
+        if (inDb.isPresent()) {
+            if (inDb.get().getOwnerId().equals(userId)) {
+                var toSave = inDb.get();
+                Optional.ofNullable(dto.getSessionId()).ifPresent(arg -> toSave.setSessionId(arg));
+                Optional.ofNullable(dto.getEventStart()).ifPresent(arg -> toSave.setEventStart(arg));
+                Optional.ofNullable(dto.getNumCarClasses()).ifPresent(arg -> toSave.setNumCarClasses(arg));
+                Optional.ofNullable(dto.getNumCarTypes()).ifPresent(arg -> toSave.setNumCarTypes(arg));
+                Optional.ofNullable(dto.getTeamRacing()).ifPresent(arg -> toSave.setTeamRacing(arg));
+                Optional.ofNullable(dto.getTrackConfig()).ifPresent(arg -> toSave.setTrackConfig(arg));
+                Optional.ofNullable(dto.getTrackDynamicTrack()).ifPresent(arg -> toSave.setTrackDynamicTrack(arg));
+                Optional.ofNullable(dto.getTrackId()).ifPresent(arg -> toSave.setTrackId(arg));
+                Optional.ofNullable(dto.getTrackLength()).ifPresent(arg -> toSave.setTrackLength(arg));
+                Optional.ofNullable(dto.getTrackNameLong()).ifPresent(arg -> toSave.setTrackNameLong(arg));
+                Optional.ofNullable(dto.getTrackNameShort()).ifPresent(arg -> toSave.setTrackNameShort(arg));
+                Optional.ofNullable(dto.getSessions()).ifPresent(arg -> toSave.setSessions(List.of(arg)));
+
+                raceEventRepository.save(toSave);
+
+            } else {
+                throw new AccessDeniedException("not owner");
+            }
+
+        }
+    }
+
     public void delete(String id) {
         String userId = getCurrentUserId();
         Optional<RaceEvent> inDb = raceEventRepository.findById(id);

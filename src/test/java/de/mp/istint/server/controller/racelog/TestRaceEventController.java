@@ -1,5 +1,6 @@
 package de.mp.istint.server.controller.racelog;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 import de.mp.istint.server.config.WithMyOwnUser;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.model.racelog.RaceLogData;
+import de.mp.istint.server.model.racelog.SessionInfo;
 
 @SpringBootTest
 public class TestRaceEventController {
@@ -87,7 +89,8 @@ public class TestRaceEventController {
     @Test
     void testReadOwnContentViaGet() throws Exception {
         // persist one entry with user id 34
-        var myEvent = RaceEvent.builder().id(UUID.randomUUID().toString()).sessionId(34L).ownerId("12").build();
+        var myEvent = RaceEvent.builder().id(UUID.randomUUID().toString()).sessionId(34L).ownerId("12")
+                .sessions(List.of(new SessionInfo(1, "Bla", "Fasel"))).build();
         mongoTemplate.save(myEvent);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/raceevents/{id}", myEvent.getId()))
