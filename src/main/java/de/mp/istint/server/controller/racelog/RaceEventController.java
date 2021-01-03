@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import de.mp.istint.server.model.racelog.DriverMetaData;
 import de.mp.istint.server.model.racelog.EventSummary;
+import de.mp.istint.server.model.racelog.LapDataMetaData;
+import de.mp.istint.server.model.racelog.PitStopMetaData;
 import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
@@ -76,6 +78,24 @@ public class RaceEventController {
     public ResponseEntity<CollectionModel<DriverMetaData>> eventDrivers(@PathVariable UUID id) {
         log.debug("get race event drivers");
         List<DriverMetaData> data = raceEventService.getDriversCondensed(id.toString());
+        return ResponseEntity
+                .ok(CollectionModel.of(data));
+    }
+
+    @Primary
+    @RequestMapping(method = RequestMethod.GET, path = "/raceevents/{id}/pitstops")
+    public ResponseEntity<CollectionModel<PitStopMetaData>> pitstops(@PathVariable UUID id) {
+        log.debug("get event pitstops");
+        List<PitStopMetaData> data = raceEventService.getPitstops(id.toString());
+        return ResponseEntity
+                .ok(CollectionModel.of(data));
+    }
+
+    @Primary
+    @RequestMapping(method = RequestMethod.GET, path = "/raceevents/{id}/{sessionNum}/{carIdx}/laptimes")
+    public ResponseEntity<CollectionModel<LapDataMetaData>> laptimes(@PathVariable UUID id, @PathVariable int sessionNum, @PathVariable int carIdx) {
+        log.debug("get laptimes: raceEvent {} session: {} carIdx: {}", id.toString(), sessionNum, carIdx);
+        List<LapDataMetaData> data = raceEventService.getLaptimes(id.toString(), sessionNum, carIdx);
         return ResponseEntity
                 .ok(CollectionModel.of(data));
     }

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LapData {
     int carIdx;
+    int lapNo;
     float lapTime;
     float[] sectors;
 }

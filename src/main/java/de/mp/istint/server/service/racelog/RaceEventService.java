@@ -191,6 +191,14 @@ public class RaceEventService {
         return raceLogDataRepository.findByRaceEventIdAndSessionNumAndSessionTimeBetweenOrderBySessionTimeAsc(raceEventId, sessionNum, (float) (sessionTime - 1), (float) (sessionTime + 0.017));
     }
 
+    public List<PitStopMetaData> getPitstops(String raceEventId) {
+        return pitStopDataRepository.findByRaceEventIdOrderBySessionNumAscSessionTimeAsc(raceEventId);
+    }
+
+    public List<LapDataMetaData> getLaptimes(String raceEventId, int sessionNum, int carIdx) {
+        return lapDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxOrderBySessionTimeAsc(raceEventId, sessionNum, carIdx);
+    }
+
     public void addData(String raceEventId, RaceDataContainer data) {
         var sessionTime = data.getRaceData().getSessionTime();
         var sessionTick = data.getRaceData().getSessionTick();
