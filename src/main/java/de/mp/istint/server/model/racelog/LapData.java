@@ -14,4 +14,7 @@ public class LapData {
     int lapNo;
     float lapTime;
     float[] sectors;
+    boolean inLap;
+    boolean outLap;
+    boolean incomplete;
 }

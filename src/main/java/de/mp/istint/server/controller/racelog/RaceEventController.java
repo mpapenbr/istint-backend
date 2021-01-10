@@ -44,6 +44,15 @@ public class RaceEventController {
     private EntityLinks entityLinks;
 
     @Primary
+    @RequestMapping(method = RequestMethod.GET, path = "/raceevents")
+    public ResponseEntity<CollectionModel<RaceEvent>> getAllEvents() {
+        log.debug("get all race event data");
+        List<RaceEvent> data = raceEventService.getAll();
+        return ResponseEntity.ok(CollectionModel.of((data)));
+
+    }
+
+    @Primary
     @RequestMapping(method = RequestMethod.POST, path = "/raceevents/request", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> requestRecording(@RequestBody NewRecordingRequestDto dto) {
         log.debug("request event id");

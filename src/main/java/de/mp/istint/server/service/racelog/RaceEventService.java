@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +52,10 @@ public class RaceEventService {
 
     @Autowired
     private IAppUserUtil appUserUtil;
+
+    public List<RaceEvent> getAll() {
+        return raceEventRepository.findAll(Sort.by(Sort.Direction.DESC, "lastModified"));
+    }
 
     /**
      * if a RaceEvent with the given sessionId is registered for the current user that event id is
