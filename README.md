@@ -18,3 +18,12 @@ real    5m40.677s
 user    0m10.475s
 sys     0m5.895s
 ```
+
+
+## Mongo data
+
+
+- create volume: `docker create volume mongo-backup`
+- create a container: `docker run -it --rm -v mongo-backup:/backup  mongo'
+- inside the container:  `mongodump --host host.docker.internal -u root -p example --authenticationDatabase admin  -d local -o /backup/`
+- get the data out of the volume to local dir: `docker run -u 1000:1000 -it --rm -v mongo-backup:/backup -v $PWD:/local  busybox cp /backup/local.tgz /local/data.tgz`
