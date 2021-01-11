@@ -27,3 +27,8 @@ sys     0m5.895s
 - create a container: `docker run -it --rm -v mongo-backup:/backup  mongo'
 - inside the container:  `mongodump --host host.docker.internal -u root -p example --authenticationDatabase admin  -d local -o /backup/`
 - get the data out of the volume to local dir: `docker run -u 1000:1000 -it --rm -v mongo-backup:/backup -v $PWD:/local  busybox cp /backup/local.tgz /local/data.tgz`
+
+### restore
+- create container: `docker run --rm -it -v $PWD/data:/local -v mongo-backup:/mongo busybox`
+- inside the container: copy and extract the dump file. The files should be available at /mongo/local
+- restore the data: `docker run --rm -it  -v mongo-data:/backup mongo  mongorestore  -h host.docker.internal -u root -p example --authenticationDatabase admin -d local /backup/local`
