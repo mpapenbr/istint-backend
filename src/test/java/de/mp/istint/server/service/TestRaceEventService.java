@@ -1,4 +1,4 @@
-package de.mp.istint.server;
+package de.mp.istint.server.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

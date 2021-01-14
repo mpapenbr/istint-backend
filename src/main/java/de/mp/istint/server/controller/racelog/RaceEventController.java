@@ -22,6 +22,7 @@ import de.mp.istint.server.model.racelog.PitStopMetaData;
 import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
+import de.mp.istint.server.model.racelog.response.StintData;
 import de.mp.istint.server.service.racelog.NewRecordingRequestDto;
 import de.mp.istint.server.service.racelog.RaceEventDataDto;
 import de.mp.istint.server.service.racelog.RaceEventService;
@@ -105,6 +106,15 @@ public class RaceEventController {
     public ResponseEntity<CollectionModel<LapDataMetaData>> laptimes(@PathVariable UUID id, @PathVariable int sessionNum, @PathVariable int carIdx) {
         log.debug("get laptimes: raceEvent {} session: {} carIdx: {}", id.toString(), sessionNum, carIdx);
         List<LapDataMetaData> data = raceEventService.getLaptimes(id.toString(), sessionNum, carIdx);
+        return ResponseEntity
+                .ok(CollectionModel.of(data));
+    }
+
+    @Primary
+    @RequestMapping(method = RequestMethod.GET, path = "/raceevents/{id}/{sessionNum}/{carIdx}/stints")
+    public ResponseEntity<CollectionModel<StintData>> stints(@PathVariable UUID id, @PathVariable int sessionNum, @PathVariable int carIdx) {
+        log.debug("get laptimes: raceEvent {} session: {} carIdx: {}", id.toString(), sessionNum, carIdx);
+        List<StintData> data = raceEventService.getStints(id.toString(), sessionNum, carIdx);
         return ResponseEntity
                 .ok(CollectionModel.of(data));
     }

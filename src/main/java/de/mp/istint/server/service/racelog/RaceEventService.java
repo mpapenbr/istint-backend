@@ -23,6 +23,7 @@ import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
 import de.mp.istint.server.model.racelog.ResultMetaData;
+import de.mp.istint.server.model.racelog.response.StintData;
 import de.mp.istint.server.repository.racelog.DriverDataRepository;
 import de.mp.istint.server.repository.racelog.LapDataRepository;
 import de.mp.istint.server.repository.racelog.PitStopDataRepository;
@@ -49,6 +50,9 @@ public class RaceEventService {
     private ResultDataRepository resultDataRepository;
     @Autowired
     private LapDataRepository lapDataRepository;
+
+    @Autowired
+    private StintProcessor stintProcessor;
 
     @Autowired
     private IAppUserUtil appUserUtil;
@@ -202,6 +206,12 @@ public class RaceEventService {
 
     public List<LapDataMetaData> getLaptimes(String raceEventId, int sessionNum, int carIdx) {
         return lapDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxOrderBySessionTimeAsc(raceEventId, sessionNum, carIdx);
+    }
+
+    public List<StintData> getStints(String raceEventId, int sessionNum, int carIdx) {
+        List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxOrderBySessionTimeAsc(raceEventId, sessionNum, carIdx);
+        return stintProcessor.analyze(laps);
+
     }
 
     public void addData(String raceEventId, RaceDataContainer data) {
