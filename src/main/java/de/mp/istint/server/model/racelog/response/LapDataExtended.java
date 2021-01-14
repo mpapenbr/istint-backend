@@ -8,6 +8,8 @@ import lombok.Data;
 @Builder
 public class LapDataExtended {
     float sessionTime;
+    int sessionTick;
+    int sessionNum;
     LapData lapData;
     boolean filtered;
     float rollAvg;

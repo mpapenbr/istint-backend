@@ -67,22 +67,29 @@ public class StintProcessor {
             while (i < laps.size() && laps.get(i).isInLap() == false && laps.get(i).isOutLap() == false)
                 i++;
             // TODO: check if last lap was outlap (probably a car reset)
-            int endOfStint = i + 1;
-            if (laps.get(i).isOutLap()) {
-                endOfStint = Math.min(0, i - 1);
-                nextStartOfStint = i;
+            if (i == laps.size()) {
+                StintData stintData = processLaps(stint, metaLaps.subList(startOfStint, laps.size() - 1), ignoreTolerance, avg);
+                ret.add(stintData);
+                break;
             } else {
-                log.debug("found end of stint at pos {}", i);
-                i++; // increment for next run
-                nextStartOfStint = i;
+
+                int endOfStint = i + 1;
+                if (laps.get(i).isOutLap()) {
+                    endOfStint = Math.min(0, i - 1);
+                    nextStartOfStint = i;
+                } else {
+                    log.debug("found end of stint at pos {}", i);
+                    i++; // increment for next run
+                    nextStartOfStint = i;
+                }
+
+                // log.debug("{}", laps.subList(startOfStint, endOfStint));
+
+                StintData stintData = processLaps(stint, metaLaps.subList(startOfStint, endOfStint), ignoreTolerance, avg);
+                ret.add(stintData);
+                startOfStint = nextStartOfStint;
+                stint++;
             }
-
-            // log.debug("{}", laps.subList(startOfStint, endOfStint));
-
-            StintData stintData = processLaps(stint, metaLaps.subList(startOfStint, endOfStint), ignoreTolerance, avg);
-            ret.add(stintData);
-            startOfStint = nextStartOfStint;
-            stint++;
 
         }
         return ret;
@@ -141,6 +148,8 @@ public class StintProcessor {
             return LapDataExtended.builder()
                     .lapData(l)
                     .sessionTime(lm.getSessionTime())
+                    .sessionTick(lm.getSessionTick())
+                    .sessionNum(lm.getSessionNum())
                     .rollAvg((float) sum.get() / i.get())
                     .rollAvgFiltered((float) sumFiltered.get() / i.get())
                     .filtered(filtered)
