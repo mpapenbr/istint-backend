@@ -12,5 +12,10 @@ import de.mp.istint.server.model.racelog.RaceLogMetaData;
 public interface RaceLogDataRepository extends MongoRepository<RaceLogMetaData, String>, RaceLogDataAddOns {
     long deleteByRaceEventId(String raceEventId);
 
+    // currently for debug only
+    List<RaceLogMetaData> findByRaceEventIdAndSessionNum(@Param("raceEventId") String raceEventId, @Param("sessionNum") int sessionNum);
+
     List<RaceLogMetaData> findByRaceEventIdAndSessionNumAndSessionTimeBetweenOrderBySessionTimeAsc(@Param("raceEventId") String raceEventId, @Param("sessionNum") int sessionNum, @Param("startTime") float startTime, @Param("endTime") float endTime);
+
+    List<RaceLogMetaData> findByRaceEventIdAndSessionNumAndSessionTickInOrderBySessionTimeAsc(@Param("raceEventId") String raceEventId, @Param("sessionNum") int sessionNum, @Param("sessionTick") List<Integer> sessionTicks);
 }

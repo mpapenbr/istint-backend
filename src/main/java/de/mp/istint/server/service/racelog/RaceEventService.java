@@ -55,6 +55,9 @@ public class RaceEventService {
     private StintProcessor stintProcessor;
 
     @Autowired
+    private MergeLaptimes mergeLaptimes;
+
+    @Autowired
     private IAppUserUtil appUserUtil;
 
     public List<RaceEvent> getAll() {
@@ -209,7 +212,7 @@ public class RaceEventService {
     }
 
     public List<StintData> getStints(String raceEventId, int sessionNum, int carIdx) {
-        List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxOrderBySessionTimeAsc(raceEventId, sessionNum, carIdx);
+        List<LapDataMetaData> laps = mergeLaptimes.mergeLaptimes(raceEventId, sessionNum, carIdx);
         return stintProcessor.analyze(laps);
 
     }

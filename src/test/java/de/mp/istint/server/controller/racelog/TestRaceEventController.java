@@ -71,8 +71,8 @@ public class TestRaceEventController {
         mockMvc.perform(MockMvcRequestBuilders.get("/raceevents"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.raceEvents").isEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isEmpty());
+        // .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.raceEvents").isEmpty());
         // should be empty
 
     }

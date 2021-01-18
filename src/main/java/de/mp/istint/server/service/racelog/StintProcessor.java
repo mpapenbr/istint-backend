@@ -68,7 +68,8 @@ public class StintProcessor {
                 i++;
             // TODO: check if last lap was outlap (probably a car reset)
             if (i == laps.size()) {
-                StintData stintData = processLaps(stint, metaLaps.subList(startOfStint, laps.size() - 1), ignoreTolerance, avg);
+                List<LapDataMetaData> sub = metaLaps.subList(startOfStint, laps.size());
+                StintData stintData = processLaps(stint, sub, ignoreTolerance, avg);
                 ret.add(stintData);
                 break;
             } else {
