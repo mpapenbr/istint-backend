@@ -77,6 +77,12 @@ public class TestStintProcessor {
         StintProcessor proc = new StintProcessor();
         List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
 
+        List<CheckStintData> expected = List.of(
+                CheckStintData.builder().no(1).laps(List.of(1, 2, 3, 4, 5)).build(),
+                CheckStintData.builder().no(2).laps(List.of(6, 7, 8, 9)).build());
+        List<CheckStintData> check = createCheckStintData(result);
+
+        Assertions.assertEquals(expected, check);
     }
 
     @Test
@@ -86,8 +92,13 @@ public class TestStintProcessor {
                 LapData.builder().lapNo(2).lapTime(20.0f).build(),
                 LapData.builder().lapNo(3).lapTime(25.0f).build());
         StintProcessor proc = new StintProcessor();
-        proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+        List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
 
+        List<CheckStintData> expected = List.of(
+                CheckStintData.builder().no(1).laps(List.of(1, 2, 3)).build());
+        List<CheckStintData> check = createCheckStintData(result);
+
+        Assertions.assertEquals(expected, check);
     }
 
     @Test
@@ -97,17 +108,27 @@ public class TestStintProcessor {
                 LapData.builder().lapNo(2).lapTime(20.0f).build(),
                 LapData.builder().lapNo(3).lapTime(25.0f).inLap(true).build());
         StintProcessor proc = new StintProcessor();
-        proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+        List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+        List<CheckStintData> expected = List.of(
+                CheckStintData.builder().no(1).laps(List.of(1, 2, 3)).build());
+        List<CheckStintData> check = createCheckStintData(result);
 
+        Assertions.assertEquals(expected, check);
     }
 
     @Test
     public void testOutInLap() {
         List<LapData> data = List.of(
                 LapData.builder().lapNo(1).lapTime(30.0f).outLap(true).build(),
-                LapData.builder().lapNo(3).lapTime(25.0f).inLap(true).build());
+                LapData.builder().lapNo(2).lapTime(25.0f).inLap(true).build());
         StintProcessor proc = new StintProcessor();
-        proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+        List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+        List<CheckStintData> expected = List.of(
+                CheckStintData.builder().no(1).laps(List.of(1, 2)).build());
+
+        List<CheckStintData> check = createCheckStintData(result);
+
+        Assertions.assertEquals(expected, check);
 
     }
 
@@ -121,7 +142,12 @@ public class TestStintProcessor {
         ;
         StintProcessor proc = new StintProcessor();
         List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
-        result.forEach(System.out::println);
+        List<CheckStintData> expected = List.of(
+                CheckStintData.builder().no(1).laps(List.of(1, 2)).build(),
+                CheckStintData.builder().no(2).laps(List.of(3)).build());
+        List<CheckStintData> check = createCheckStintData(result);
+
+        Assertions.assertEquals(expected, check);
 
     }
 
@@ -138,18 +164,30 @@ public class TestStintProcessor {
         ;
         StintProcessor proc = new StintProcessor();
         List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
-        result.forEach(System.out::println);
+        List<CheckStintData> expected = List.of(
+                CheckStintData.builder().no(1).laps(List.of(1)).build(),
+                CheckStintData.builder().no(2).laps(List.of(2)).build(),
+                CheckStintData.builder().no(3).laps(List.of(3, 4, 5)).build());
+        List<CheckStintData> check = createCheckStintData(result);
+
+        Assertions.assertEquals(expected, check);
 
     }
 
     @Test
     public void testOutOutLap() {
         List<LapData> data = List.of(
+                LapData.builder().lapNo(0).lapTime(30.0f).build(),
                 LapData.builder().lapNo(1).lapTime(30.0f).outLap(true).build(),
-                LapData.builder().lapNo(3).lapTime(25.0f).outLap(true).build());
+                LapData.builder().lapNo(2).lapTime(25.0f).outLap(true).build());
         StintProcessor proc = new StintProcessor();
-        proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+        List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+        List<CheckStintData> expected = List.of(
+                CheckStintData.builder().no(1).laps(List.of(1)).build(),
+                CheckStintData.builder().no(2).laps(List.of(2)).build());
+        List<CheckStintData> check = createCheckStintData(result);
 
+        Assertions.assertEquals(expected, check);
     }
 
     @Test
@@ -157,8 +195,13 @@ public class TestStintProcessor {
         List<LapData> data = List.of(
                 LapData.builder().lapNo(1).lapTime(25.0f).outLap(true).build());
         StintProcessor proc = new StintProcessor();
-        proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+        List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
 
+        List<CheckStintData> expected = List.of(
+                CheckStintData.builder().no(1).laps(List.of(1)).build());
+        List<CheckStintData> check = createCheckStintData(result);
+
+        Assertions.assertEquals(expected, check);
     }
 
 }
