@@ -76,7 +76,7 @@ public class StintProcessor {
 
                 int endOfStint = i + 1;
                 if (laps.get(i).isOutLap()) {
-                    endOfStint = Math.min(0, i - 1);
+                    endOfStint = Math.max(0, i - 1);
                     nextStartOfStint = i;
                 } else {
                     log.debug("found end of stint at pos {}", i);

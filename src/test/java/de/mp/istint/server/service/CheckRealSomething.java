@@ -1,7 +1,11 @@
 package de.mp.istint.server.service;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -192,6 +196,57 @@ public class CheckRealSomething {
         // });
         StintProcessor proc = new StintProcessor();
         List<StintData> stints = proc.analyze(laps);
+    }
+
+    @Test
+    public void testDaytona24MissingLaps() {
+        String raceEventId = "403957dc-3570-481b-a288-a6877d6a120f";
+        int sessionNum = 2;
+        int carIdx = 30;
+        MergeLaptimes mergeLaptimes = new MergeLaptimes(lapDataRepository, resultDataRepository, raceLogDataRepository);
+        List<LapDataMetaData> laps = mergeLaptimes.mergeLaptimes(raceEventId, sessionNum, carIdx);
+        laps.stream()
+                .skip(180)
+                .limit(25)
+                .forEach(l -> {
+                    System.out.printf("Lap %3d:%7.3f in:%6b out:%6b inc:%6b%n",
+                            l.getData().getLapNo(), l.getData().getLapTime(),
+                            l.getData().isInLap(), l.getData().isOutLap(), l.getData().isIncomplete());
+                });
+        // System.out.println("CheckRealSomething.testCarIdx22() RAW LAPS");
+        // List<LapDataMetaData> rawLaps = lapDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxOrderBySessionTimeAsc(raceEventId, sessionNum, carIdx);
+        // rawLaps.stream().skip(0).limit(50).forEach(l -> {
+        //     System.out.printf("Lap %3d:%7.3f in:%6b out:%6b inc:%6b%n",
+        //             l.getData().getLapNo(), l.getData().getLapTime(),
+        //             l.getData().isInLap(), l.getData().isOutLap(), l.getData().isIncomplete());
+        // });
+        StintProcessor proc = new StintProcessor();
+        List<StintData> stints = proc.analyze(laps);
+    }
+
+    @Test
+    public void collectDaytona24WrongLaps() throws FileNotFoundException {
+        String raceEventId = "403957dc-3570-481b-a288-a6877d6a120f";
+        int sessionNum = 2;
+        int carIdx = 30;
+        // List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumAndDataLapTimeGreaterThanOrderBySessionTimeAsc(raceEventId, sessionNum, 1000);
+        List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumOrderBySessionTimeAsc(raceEventId, sessionNum);
+        long over = laps.stream().filter(l -> l.getData().getLapTime() > 1000).count();
+
+        System.out.printf("total: %d over: %d%n", laps.size(), over);
+        try (PrintWriter ps = new PrintWriter(new FileOutputStream("daytona-strange.csv", false))) {
+            laps.stream().filter(l -> l.getData().getLapTime() > 1000).forEach(l -> ps.write(String.format("%s%n", l)));
+        }
+    }
+
+    @Test
+    public void collectDaytona24WrongLapsX() throws FileNotFoundException {
+        String raceEventId = "403957dc-3570-481b-a288-a6877d6a120f";
+        int sessionNum = 2;
+        int carIdx = 30;
+        // List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumAndDataLapTimeGreaterThanOrderBySessionTimeAsc(raceEventId, sessionNum, 1000);
+        LapDataMetaData lap = lapDataRepository.findById(UUID.fromString("80445214-581e-06c4-70e0-977c67661c9f")).get();
+
     }
 
 }
