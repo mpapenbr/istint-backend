@@ -22,6 +22,8 @@ import de.mp.istint.server.model.racelog.PitStopMetaData;
 import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
+import de.mp.istint.server.model.racelog.response.CarStintData;
+import de.mp.istint.server.model.racelog.response.Gap;
 import de.mp.istint.server.model.racelog.response.StintData;
 import de.mp.istint.server.service.racelog.NewRecordingRequestDto;
 import de.mp.istint.server.service.racelog.RaceEventDataDto;
@@ -102,6 +104,15 @@ public class RaceEventController {
     }
 
     @Primary
+    @RequestMapping(method = RequestMethod.GET, path = "/raceevents/{id}/{sessionNum}/stints")
+    public ResponseEntity<CollectionModel<CarStintData>> stints(@PathVariable UUID id, @PathVariable int sessionNum) {
+        log.debug("get laptimes: raceEvent {} session: {} carIdx: {}", id.toString(), sessionNum);
+        List<CarStintData> data = raceEventService.getStints(id.toString(), sessionNum);
+        return ResponseEntity
+                .ok(CollectionModel.of(data));
+    }
+
+    @Primary
     @RequestMapping(method = RequestMethod.GET, path = "/raceevents/{id}/{sessionNum}/{carIdx}/laptimes")
     public ResponseEntity<CollectionModel<LapDataMetaData>> laptimes(@PathVariable UUID id, @PathVariable int sessionNum, @PathVariable int carIdx) {
         log.debug("get laptimes: raceEvent {} session: {} carIdx: {}", id.toString(), sessionNum, carIdx);
@@ -115,6 +126,16 @@ public class RaceEventController {
     public ResponseEntity<CollectionModel<StintData>> stints(@PathVariable UUID id, @PathVariable int sessionNum, @PathVariable int carIdx) {
         log.debug("get laptimes: raceEvent {} session: {} carIdx: {}", id.toString(), sessionNum, carIdx);
         List<StintData> data = raceEventService.getStints(id.toString(), sessionNum, carIdx);
+        return ResponseEntity
+                .ok(CollectionModel.of(data));
+
+    }
+
+    @Primary
+    @RequestMapping(method = RequestMethod.GET, path = "/raceevents/{id}/{sessionNum}/gaps/{refCarIdx}/{otherCarIdx}")
+    public ResponseEntity<CollectionModel<Gap>> gaps(@PathVariable UUID id, @PathVariable int sessionNum, @PathVariable int refCarIdx, @PathVariable int otherCarIdx) {
+        log.debug("get gaps: raceEvent {} session: {} refCarIdx: {} otherCarIdx: {}", id.toString(), sessionNum, refCarIdx, otherCarIdx);
+        List<Gap> data = raceEventService.getGapProgression(id.toString(), sessionNum, refCarIdx, otherCarIdx);
         return ResponseEntity
                 .ok(CollectionModel.of(data));
     }

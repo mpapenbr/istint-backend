@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -17,6 +19,7 @@ import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoCo
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.StopWatch;
 
 import de.mp.istint.server.model.racelog.LapDataMetaData;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
@@ -247,6 +250,76 @@ public class CheckRealSomething {
         // List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumAndDataLapTimeGreaterThanOrderBySessionTimeAsc(raceEventId, sessionNum, 1000);
         LapDataMetaData lap = lapDataRepository.findById(UUID.fromString("80445214-581e-06c4-70e0-977c67661c9f")).get();
 
+    }
+
+    @Test
+    public void collectAllStints() throws FileNotFoundException {
+        String raceEventId = "403957dc-3570-481b-a288-a6877d6a120f";
+        int sessionNum = 2;
+        StopWatch sw = new StopWatch("check stints");
+        sw.start("read data");
+        List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumOrderBySessionTimeAsc(raceEventId, sessionNum);
+        sw.stop();
+        Map<Object, List<LapDataMetaData>> lookup = laps.stream().collect(Collectors.groupingBy(l -> l.getData().getCarIdx()));
+        lookup.forEach((k, v) -> {
+            sw.start("Car " + k);
+            StintProcessor proc = new StintProcessor();
+            List<StintData> stints = proc.analyze(v);
+            sw.stop();
+        });
+        System.out.println(sw.prettyPrint());
+    }
+
+    @Test
+    public void collectResultDataForCar() throws FileNotFoundException {
+        String raceEventId = "403957dc-3570-481b-a288-a6877d6a120f";
+        int sessionNum = 2;
+        StopWatch sw = new StopWatch("collect data");
+        sw.start("read data");
+        List<ResultMetaData> data = resultDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxOrderBySessionTimeAsc(raceEventId, sessionNum, 34);
+        System.out.println("CheckRealSomething.collectResultDataForCar() " + data.size());
+        sw.stop();
+        sw.start("Processing");
+        Map<Integer, List<ResultMetaData>> byLap = data.stream().collect(Collectors.groupingBy(d -> d.getData().getLapsComplete()));
+        //Comparator<Entry<Integer,?>> sortByLapNo = item -> Comparator.comparing(E)
+
+        byLap.entrySet().stream().sorted(Entry.comparingByKey())
+                .limit(50)
+                .forEach(item -> System.out.printf("L %3d: Delta: %.2f%n", item.getKey(), item.getValue().get(0).getData().getDelta()));
+        ;
+
+        System.out.println(sw.prettyPrint());
+    }
+
+    @Test
+    public void collectResultDataForTwoCars() throws FileNotFoundException {
+        String raceEventId = "403957dc-3570-481b-a288-a6877d6a120f";
+        int sessionNum = 2;
+        StopWatch sw = new StopWatch("collect data");
+        sw.start("read data");
+        List<ResultMetaData> data = resultDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxInOrderBySessionTimeAsc(raceEventId, sessionNum, List.of(40, 37));
+
+        System.out.println("CheckRealSomething.collectResultDataForCar() " + data.size());
+        sw.stop();
+        sw.start("Processing");
+        Map<Integer, List<ResultMetaData>> car1ByLap = data.stream().filter(item -> item.getData().getCarIdx() == 40).collect(Collectors.groupingBy(d -> d.getData().getLapsComplete()));
+        Map<Integer, List<ResultMetaData>> car2ByLap = data.stream().filter(item -> item.getData().getCarIdx() == 37).collect(Collectors.groupingBy(d -> d.getData().getLapsComplete()));
+        //Comparator<Entry<Integer,?>> sortByLapNo = item -> Comparator.comparing(E)
+
+        car1ByLap.entrySet().stream().sorted(Entry.comparingByKey())
+                // .limit(50)
+                .forEach(item -> {
+                    List<ResultMetaData> other = Optional.ofNullable(car2ByLap.get(item.getKey())).orElse(List.of());
+                    float myDelta = item.getValue().get(0).getData().getDelta();
+                    float otherDelta = other.isEmpty() ? 0 : other.get(0).getData().getDelta();
+
+                    System.out.printf("L %3d: Delta1: %.2f Delta2: %.2f Diff: %.2f%n", item.getKey(),
+                            myDelta, otherDelta, myDelta - otherDelta
+
+                );
+                });
+
+        System.out.println(sw.prettyPrint());
     }
 
 }

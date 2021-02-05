@@ -51,11 +51,30 @@ public class MergeLaptimes {
 
     }
 
+    /**
+     * merges all laptimes for a session
+     * 
+     * @param raceEventId
+     * @param sessionNum
+     * @return merged laptimes in a map. key is carIdx
+     */
+    public Map<Integer, List<LapDataMetaData>> mergeLaptimes(String raceEventId, int sessionNum) {
+
+        return mergeLaptimesPure(raceEventId, sessionNum);
+
+    }
+
     public List<LapDataMetaData> mergeLaptimesPure(String raceEventId, int sessionNum, int carIdx) {
 
         List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxOrderBySessionTimeAsc(raceEventId, sessionNum, carIdx);
 
         return laps;
+    }
+
+    public Map<Integer, List<LapDataMetaData>> mergeLaptimesPure(String raceEventId, int sessionNum) {
+
+        List<LapDataMetaData> laps = lapDataRepository.findByRaceEventIdAndSessionNumOrderBySessionTimeAsc(raceEventId, sessionNum);
+        return laps.stream().collect(Collectors.groupingBy(l -> l.getData().getCarIdx()));
     }
 
     public List<LapDataMetaData> mergeLaptimesOld(String raceEventId, int sessionNum, int carIdx) {

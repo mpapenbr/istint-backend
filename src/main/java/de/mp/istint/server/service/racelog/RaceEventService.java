@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -23,6 +25,9 @@ import de.mp.istint.server.model.racelog.RaceDataContainer;
 import de.mp.istint.server.model.racelog.RaceEvent;
 import de.mp.istint.server.model.racelog.RaceLogMetaData;
 import de.mp.istint.server.model.racelog.ResultMetaData;
+import de.mp.istint.server.model.racelog.response.CarStintData;
+import de.mp.istint.server.model.racelog.response.Gap;
+import de.mp.istint.server.model.racelog.response.Gap.CarInfo;
 import de.mp.istint.server.model.racelog.response.StintData;
 import de.mp.istint.server.repository.racelog.DriverDataRepository;
 import de.mp.istint.server.repository.racelog.LapDataRepository;
@@ -214,7 +219,58 @@ public class RaceEventService {
     public List<StintData> getStints(String raceEventId, int sessionNum, int carIdx) {
         List<LapDataMetaData> laps = mergeLaptimes.mergeLaptimes(raceEventId, sessionNum, carIdx);
         return stintProcessor.analyze(laps);
+    }
 
+    public List<CarStintData> getStints(String raceEventId, int sessionNum) {
+        Map<Integer, List<LapDataMetaData>> laps = mergeLaptimes.mergeLaptimes(raceEventId, sessionNum);
+        return laps.entrySet().stream().map(e -> CarStintData.builder().carIdx(e.getKey()).stints(stintProcessor.analyze(e.getValue())).build()).collect(Collectors.toList());
+
+    }
+
+    public List<Gap> getGapProgression(String raceEventId, int sessionNum, int carIdxRef, int carIdxOther) {
+        List<ResultMetaData> data = resultDataRepository.findByRaceEventIdAndSessionNumAndDataCarIdxInOrderBySessionTimeAsc(raceEventId, sessionNum, List.of(carIdxRef, carIdxOther));
+
+        Map<Integer, List<ResultMetaData>> car1ByLap = data.stream().filter(item -> item.getData().getCarIdx() == carIdxRef).collect(Collectors.groupingBy(d -> d.getData().getLapsComplete()));
+        Map<Integer, List<ResultMetaData>> car2ByLap = data.stream().filter(item -> item.getData().getCarIdx() == carIdxOther).collect(Collectors.groupingBy(d -> d.getData().getLapsComplete()));
+        //Comparator<Entry<Integer,?>> sortByLapNo = item -> Comparator.comparing(E)
+
+        List<Gap> gaps = car1ByLap.entrySet().stream().sorted(Entry.comparingByKey())
+                // .limit(50)
+                .map(item -> {
+                    List<ResultMetaData> other = Optional.ofNullable(car2ByLap.get(item.getKey())).orElse(List.of());
+                    float myDelta = item.getValue().get(0).getData().getDelta();
+                    float otherDelta = other.isEmpty() ? 0 : other.get(0).getData().getDelta();
+                    /**
+                     * we want: positive numbers if ref is in front of other. No delta if other hase
+                     * no value
+                     * 
+                     */
+
+                    float delta = otherDelta != 0 ? otherDelta - myDelta : 0;
+                    // System.out.printf("L %3d: Delta1: %.2f Delta2: %.2f Diff: %.2f%n", item.getKey(),
+                    //         myDelta, otherDelta, myDelta - otherDelta);
+
+                    return Gap.builder()
+                            .delta(delta)
+                            .lapNo(item.getKey())
+                            .ref(Gap.CarInfo.builder()
+                                    .carIdx(carIdxRef)
+                                    .position(item.getValue().get(0).getData().getPosition())
+                                    .classPosition(item.getValue().get(0).getData().getClassPosition())
+                                    .rawDelta(myDelta)
+                                    .build())
+                            .other(other.isEmpty() ? null
+                                    : CarInfo.builder()
+                                            .carIdx(carIdxOther)
+                                            .position(other.get(0).getData().getPosition())
+                                            .classPosition(other.get(0).getData().getClassPosition())
+                                            .rawDelta(otherDelta)
+                                            .build())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return gaps;
     }
 
     public void addData(String raceEventId, RaceDataContainer data) {

@@ -12,4 +12,6 @@ public interface ResultDataRepository extends MongoRepository<ResultMetaData, UU
     long deleteByRaceEventId(String raceEventId);
 
     List<ResultMetaData> findByRaceEventIdAndSessionNumAndDataCarIdxOrderBySessionTimeAsc(@Param("raceEventId") String raceEventId, @Param("sessionNum") int sessionNum, @Param("data.carIdx") int carIdx);
+
+    List<ResultMetaData> findByRaceEventIdAndSessionNumAndDataCarIdxInOrderBySessionTimeAsc(@Param("raceEventId") String raceEventId, @Param("sessionNum") int sessionNum, @Param("data.carIdx") List<Integer> carIdx);
 }
