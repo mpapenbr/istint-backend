@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import de.mp.istint.server.model.User;
 
-@Profile("prod")
+@Profile("keycloak")
 @Component
 public class AppUserUtil implements IAppUserUtil {
 

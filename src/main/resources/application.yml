@@ -6,18 +6,24 @@ spring:
       password: see application-secrets.yml
       database: see application-secrets.yml
       authentication-database: see application-secrets.yml
-  
+server:
+  compression:
+    enabled: true
+    mime-types:
+    - application/json  
+    - application/hal+json
+    min-response-size: 1024
   # security:
   #   user:
   #     name: user
   #     password: "{noop}password"
 
 logging:
-  level:
-    de.mp.istint.server: debug
-    org.springframework.data: info      
-    org.springframework.security.authentication: debug
-    org.springframework.security: debug
+  level:    
+    '[de.mp.istint.server]': debug
+    '[org.springframework.data]': info      
+    #org.springframework.security.authentication: debug
+    #org.springframework.security: debug
 
 
 istint:

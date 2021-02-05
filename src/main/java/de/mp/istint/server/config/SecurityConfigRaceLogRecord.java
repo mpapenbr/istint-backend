@@ -20,11 +20,11 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@Profile("prod-full")
+@Profile("prod-racelog-recording")
 @ConditionalOnProperty(name = "keycloak.enabled", havingValue = "true")
 @KeycloakConfiguration
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
-public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
+public class SecurityConfigRaceLogRecord extends KeycloakWebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -38,10 +38,13 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         super.configure(http);
         // @formatter:off
         http
-                .authorizeRequests(a -> a.antMatchers("/error").permitAll()
+                .authorizeRequests(a -> a.antMatchers("/", "/error").permitAll()
                         //TODO: Temporary for testing. Remove for production
                         .antMatchers("/hello").permitAll()
                         .antMatchers(HttpMethod.GET, "/raceevents/**").permitAll()
+                        .antMatchers(HttpMethod.POST, "/raceevents/**").permitAll()
+                        .antMatchers(HttpMethod.PUT, "/raceevents/**").permitAll()
+                        .antMatchers(HttpMethod.DELETE, "/raceevents/**").denyAll()
                         //.antMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated())
                 .csrf(c -> c.disable())

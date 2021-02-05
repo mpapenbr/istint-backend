@@ -9,7 +9,6 @@ import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,11 +19,11 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@Profile("prod-full")
+@Profile("prod-racelog-dev")
 @ConditionalOnProperty(name = "keycloak.enabled", havingValue = "true")
 @KeycloakConfiguration
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
-public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
+public class SecurityConfigRaceLogDev extends KeycloakWebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -38,10 +37,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         super.configure(http);
         // @formatter:off
         http
-                .authorizeRequests(a -> a.antMatchers("/error").permitAll()
+                .authorizeRequests(a -> a.antMatchers("/", "/error").permitAll()
                         //TODO: Temporary for testing. Remove for production
                         .antMatchers("/hello").permitAll()
-                        .antMatchers(HttpMethod.GET, "/raceevents/**").permitAll()
+                        
+                        .antMatchers("/raceevents/**").permitAll()
                         //.antMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated())
                 .csrf(c -> c.disable())
