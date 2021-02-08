@@ -57,6 +57,7 @@ public class StintProcessor {
 
         int startOfStint = i;
         int nextStartOfStint = i;
+        Predicate<LapData> inPit = ld -> ld.isInLap() || ld.isOutLap();
         while (i < laps.size()) {
             // // find start of stint
             // while (i < laps.size() && laps.get(i).isOutLap() == false)
@@ -64,7 +65,7 @@ public class StintProcessor {
             log.debug("found start of stint at pos {}", i);
 
             i++;
-            while (i < laps.size() && laps.get(i).isInLap() == false && laps.get(i).isOutLap() == false)
+            while (i < laps.size() && inPit.negate().test(laps.get(i)))
                 i++;
             // TODO: check if last lap was outlap (probably a car reset)
             if (i == laps.size()) {
@@ -76,18 +77,24 @@ public class StintProcessor {
 
                 int endOfStint = i + 1;
                 if (laps.get(i).isOutLap()) {
-                    endOfStint = Math.max(0, i - 1);
+                    endOfStint = Math.max(0, i);
+                    StintData stintData = processLaps(stint, endOfStint == 0 ? List.of(metaLaps.get(0)) : metaLaps.subList(startOfStint, endOfStint), ignoreTolerance, avg);
+                    log.debug("created stint data {}", String.format("s: %d start: %3d end: %3d",
+                            stintData.getStintNo(),
+                            stintData.getLaps().get(0).getLapData().getLapNo(),
+                            stintData.getLaps().get(stintData.getLaps().size() - 1).getLapData().getLapNo()));
+                    ret.add(stintData);
                     nextStartOfStint = i;
                 } else {
                     log.debug("found end of stint at pos {}", i);
+                    StintData stintData = processLaps(stint, metaLaps.subList(startOfStint, endOfStint), ignoreTolerance, avg);
+                    ret.add(stintData);
                     i++; // increment for next run
                     nextStartOfStint = i;
                 }
 
                 // log.debug("{}", laps.subList(startOfStint, endOfStint));
 
-                StintData stintData = processLaps(stint, metaLaps.subList(startOfStint, endOfStint), ignoreTolerance, avg);
-                ret.add(stintData);
                 startOfStint = nextStartOfStint;
                 stint++;
             }
