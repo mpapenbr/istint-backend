@@ -239,14 +239,14 @@ public class RaceEventService {
                 .map(item -> {
                     List<ResultMetaData> other = Optional.ofNullable(car2ByLap.get(item.getKey())).orElse(List.of());
                     float myDelta = item.getValue().get(0).getData().getDelta();
-                    float otherDelta = other.isEmpty() ? 0 : other.get(0).getData().getDelta();
+                    float otherDelta = other.isEmpty() ? -1 : other.get(0).getData().getDelta();
                     /**
                      * we want: positive numbers if ref is in front of other. No delta if other hase
                      * no value
                      * 
                      */
 
-                    float delta = otherDelta != 0 ? otherDelta - myDelta : 0;
+                    float delta = otherDelta != -1 ? otherDelta - myDelta : 0;
                     // System.out.printf("L %3d: Delta1: %.2f Delta2: %.2f Diff: %.2f%n", item.getKey(),
                     //         myDelta, otherDelta, myDelta - otherDelta);
 

@@ -207,4 +207,21 @@ public class TestStintProcessor {
                 Assertions.assertEquals(expected, check);
         }
 
+        @Test
+        public void testOnlyOutLaps() {
+                List<LapData> data = List.of(
+                                LapData.builder().lapNo(1).lapTime(30.0f).build(),
+                                LapData.builder().lapNo(2).lapTime(20.0f).outLap(true).build(),
+                                LapData.builder().lapNo(3).lapTime(25.0f).build());
+                StintProcessor proc = new StintProcessor();
+                List<StintData> result = proc.analyze(data.stream().map(d -> LapDataMetaData.builder().data(d).raceEventId("1").sessionTime(1).build()).collect(Collectors.toList()));
+
+                List<CheckStintData> expected = List.of(
+                                CheckStintData.builder().no(1).laps(List.of(1)).build(),
+                                CheckStintData.builder().no(2).laps(List.of(2, 3)).build());
+                List<CheckStintData> check = createCheckStintData(result);
+
+                Assertions.assertEquals(expected, check);
+        }
+
 }
