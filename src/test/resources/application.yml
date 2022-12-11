@@ -10,6 +10,11 @@ spring:
       name: user
       password: "{noop}password"
 
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://not-needed-here.org
+
 logging:
   level:
     root: info

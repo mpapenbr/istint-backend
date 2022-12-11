@@ -3,7 +3,7 @@
     "spring-boot.ls.logfile": "/tmp/bootls.log",
     "maven.view": "hierarchical",
     "java.format.settings.url": ".vscode/java-code-style.xml",
-    "java.dependency.packagePresentation": "hierarchical",
+    "java.dependency.packagePresentation": "flat",
     //"java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
     //"java.format.settings.profile": "GoogleStyle"
 }

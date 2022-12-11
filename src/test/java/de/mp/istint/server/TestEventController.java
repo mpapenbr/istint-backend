@@ -2,18 +2,12 @@ package de.mp.istint.server;
 
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +17,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.mp.istint.server.config.WithMyOwnUser;
 import de.mp.istint.server.model.Event;
 
@@ -31,7 +27,7 @@ import de.mp.istint.server.model.Event;
  * @author mpapenbr
  *
  */
-@SpringBootTest
+@SpringBootTest(properties = { "de.flapdoodle.mongodb.embedded.version=5.0.5" })
 
 public class TestEventController {
 
@@ -45,17 +41,17 @@ public class TestEventController {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    @TestConfiguration
+    // @TestConfiguration
+    // @EnableMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
+    // class MyContext {
+    //     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    //         return http.authorizeHttpRequests(ar -> ar.requestMatchers("/**").authenticated())
+    //                 .csrf(c -> c.disable())
+    //                 .build(); // do this or have any POST have crsf() called in mock
 
-    @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
-    static class MyContext extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests(ar -> ar.antMatchers("/**").authenticated())
-                    .csrf(c -> c.disable()); // do this or have any POST have crsf() called in mock
-        }
+    //     }
 
-    }
+    // }
 
     @BeforeEach
     public void setup() {
@@ -98,7 +94,7 @@ public class TestEventController {
     void testProtectedAnonymous() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/events"))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isForbidden());
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @WithMyOwnUser(id = "12")

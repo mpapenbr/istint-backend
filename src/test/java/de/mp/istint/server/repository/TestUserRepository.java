@@ -9,7 +9,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import de.mp.istint.server.model.User;
 
-@DataMongoTest
+@DataMongoTest(properties = { "de.flapdoodle.mongodb.embedded.version=5.0.5" })
 @ExtendWith(SpringExtension.class)
 public class TestUserRepository {
 

@@ -2,14 +2,15 @@ package de.mp.istint.server.util;
 
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.keycloak.representations.AccessToken;
-import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import de.mp.istint.server.model.User;
 
-@Profile("keycloak")
+// @Profile("keycloak")
 @Component
 public class AppUserUtil implements IAppUserUtil {
 
@@ -23,6 +24,20 @@ public class AppUserUtil implements IAppUserUtil {
                     .name(accessToken.getPreferredUsername())
                     .details(auth.getDetails())
                     .build();
+        }
+        if (auth instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken jwt = (JwtAuthenticationToken) auth;
+
+            return User.builder()
+                    .id(jwt.getToken().getSubject())
+                    .name(jwt.getName())
+                    .details(auth.getDetails())
+                    .build();
+        }
+        if (auth instanceof UsernamePasswordAuthenticationToken) {
+            UsernamePasswordAuthenticationToken pwdToken = (UsernamePasswordAuthenticationToken) auth;
+
+            return (User) pwdToken.getPrincipal();
         }
 
         return null;

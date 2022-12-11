@@ -1,11 +1,17 @@
 spring:
   data:
     mongodb:
-      host: host.docker.internal
-      username: see application-secrets.yml
-      password: see application-secrets.yml
-      database: see application-secrets.yml
-      authentication-database: see application-secrets.yml
+      host: override this in application-local.yml
+      username: override this in application-local.yml
+      password: override this in application-local.yml
+      database: override this in application-local.yml
+      authentication-database: override this in application-local.yml
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://auth-test.juelps.de/realms/iracing-tools-test
 server:
   compression:
     enabled: true
@@ -30,7 +36,14 @@ istint:
   cors:
     allowedOrigins: 
       - '*'
-    allowCredentials: false
+    allowedMethods:
+      - 'GET'
+      - 'POST'
+      - 'PUT'
+      - 'DELETE'
+    allowedHeaders:
+      - '*'
+    allowCredentials: true
   
 
 
