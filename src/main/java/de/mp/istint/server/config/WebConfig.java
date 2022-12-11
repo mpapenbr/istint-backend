@@ -2,10 +2,6 @@ package de.mp.istint.server.config;
 
 import java.util.List;
 
-import javax.servlet.Filter;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,14 +14,16 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.mp.istint.server.config.data.CorsData;
 import de.mp.istint.server.util.LogRequestFilter;
+import jakarta.servlet.Filter;
 
 @Configuration
-@EnableWebMvc
+// @EnableWebMvc
 @Profile({ "dev", "prod" })
 public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
 

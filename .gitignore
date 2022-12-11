@@ -1,4 +1,6 @@
 private.tar
+.gitconfig.local*
+.npmrc
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

@@ -1,69 +1,78 @@
 package de.mp.istint.server.config;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
-import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
-import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
-import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Profile("prod-racelog-dev")
-@ConditionalOnProperty(name = "keycloak.enabled", havingValue = "true")
-@KeycloakConfiguration
-@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
-public class SecurityConfigRaceLogDev extends KeycloakWebSecurityConfigurerAdapter {
+import de.mp.istint.server.config.data.CorsData;
+import jakarta.servlet.http.HttpServletRequest;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        KeycloakAuthenticationProvider keycloakAuthenticationProvider = keycloakAuthenticationProvider();
+@Configuration
+@EnableWebSecurity
+public class SecurityConfigRaceLogDev {
+
+    // @Bean
+    // @Primary
+    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
+        KeycloakAuthenticationProvider keycloakAuthenticationProvider = new KeycloakAuthenticationProvider();
         keycloakAuthenticationProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
         auth.authenticationProvider(keycloakAuthenticationProvider);
+        return auth.build();
+
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        super.configure(http);
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsData corsData) throws Exception {
+
         // @formatter:off
         http
-                .authorizeRequests(a -> a.antMatchers("/", "/error").permitAll()
+                // .authenticationManager(authManager)
+                .authorizeHttpRequests(a -> a.requestMatchers("/", "/error").permitAll()
                         //TODO: Temporary for testing. Remove for production
-                        .antMatchers("/hello").permitAll()
-                        
-                        .antMatchers("/raceevents/**").permitAll()
+                        .requestMatchers("/hello").permitAll()
+
+                        .requestMatchers("/raceevents/**").permitAll()
                         //.antMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated())
                 .csrf(c -> c.disable())
-
-                .cors() // note: this setting is not needed here since we use Spring MVC CORS (see Spring Security doc https://docs.spring.io/spring-security/site/docs/5.4.1/reference/html5/#cors)
+                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+                .cors(c -> c.configurationSource(corsConfigurationSource(corsData)))
 
         ;
         // @formatter:on
+        return http.build();
+
     }
 
     @Bean
-    @ConditionalOnProperty(name = "keycloak.enabled", havingValue = "true")
-    public KeycloakSpringBootConfigResolver KeycloakConfigResolver() {
-        return new KeycloakSpringBootConfigResolver();
+    @ConfigurationProperties("istint.cors")
+    public CorsData corsData() {
+        return new CorsData();
     }
 
     @Bean
-    @Override
-    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-
-        return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
-        // return new NullAuthenticatedSessionStrategy();
+    CorsConfigurationSource corsConfigurationSource(CorsData corsData) {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(corsData.getAllowedOrigins());
+        configuration.setAllowedHeaders(corsData.getAllowedHeaders());
+        configuration.setAllowedMethods(corsData.getAllowedMethods());
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @GetMapping("/error")
