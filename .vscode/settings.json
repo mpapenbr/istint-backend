@@ -4,6 +4,7 @@
     "maven.view": "hierarchical",
     "java.format.settings.url": ".vscode/java-code-style.xml",
     "java.dependency.packagePresentation": "flat",
+    "java.compile.nullAnalysis.mode": "disabled",
     //"java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
     //"java.format.settings.profile": "GoogleStyle"
 }
