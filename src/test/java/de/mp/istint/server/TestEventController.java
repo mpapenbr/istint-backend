@@ -21,15 +21,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.mp.istint.server.config.WithMyOwnUser;
 import de.mp.istint.server.model.Event;
+import de.mp.istint.server.repository.TCBaseMongoDb;
 
 /*
  * This class tests one controller only. Note, it can be combined with security out of the box.
  * @author mpapenbr
  *
  */
-@SpringBootTest(properties = { "de.flapdoodle.mongodb.embedded.version=5.0.5" })
+@SpringBootTest
 
-public class TestEventController {
+public class TestEventController extends TCBaseMongoDb {
 
     private MockMvc mockMvc;
     @Autowired

@@ -1,9 +1,10 @@
 spring:
   data:
-    mongodb:
-      host: localhost
-      port: 0
+    mongodb:      
+      # the other attributes are not needed here, they are populated by testcontainers.
+      # host: localhost:0
       database: springboot-mongo
+
   # this is to prevent spring from generating passwords for the default user 'user'
   security:
     user:
@@ -18,11 +19,12 @@ spring:
 logging:
   level:
     root: info
-    de.mp.istint.server: debug
-    org.springframework.boot.autoconfigure.mongo.embedded: off
-    org.mongodb: off    
-    org.springframework.security.authentication: debug
-    org.springframework: info
+    # '[de.mp.istint.server]': debug
+    # '[com.github.dockerjava.zerodep]': info
+    # org.springframework.boot.autoconfigure.mongo.embedded: off
+    # org.mongodb: off    
+    # org.springframework.security.authentication: debug
+    # org.springframework: info
   file:
     name: tests.log
   pattern:  

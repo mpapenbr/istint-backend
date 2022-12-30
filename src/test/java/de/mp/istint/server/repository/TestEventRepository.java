@@ -24,8 +24,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@DataMongoTest(properties = { "de.flapdoodle.mongodb.embedded.version=5.0.5" })
-public class TestEventRepository {
+@DataMongoTest
+public class TestEventRepository extends TCBaseMongoDb {
 
     @Autowired
     private MongoTemplate mongoTemplate;
