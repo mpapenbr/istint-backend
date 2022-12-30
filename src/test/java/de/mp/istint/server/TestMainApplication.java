@@ -7,8 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "de.flapdoodle.mongodb.embedded.version=5.0.5" })
-class TestMainApplication {
+import de.mp.istint.server.repository.TCBaseMongoDb;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+class TestMainApplication extends TCBaseMongoDb {
 
 	@LocalServerPort
 	private int port;
