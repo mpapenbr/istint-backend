@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.0.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>de.mp.istint</groupId>
 	<artifactId>server</artifactId>
@@ -28,7 +29,7 @@
 				<version>${keycloak.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>			
+			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers-bom</artifactId>
@@ -54,7 +55,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
@@ -68,7 +69,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.keycloak</groupId>
 			<artifactId>keycloak-spring-boot-starter</artifactId>
@@ -110,12 +111,12 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	
+
 		<!-- <dependency>
 			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo.spring30x</artifactId>
+		<artifactId>de.flapdoodle.embed.mongo.spring30x</artifactId>
 			<version>4.3.2</version>
-			<scope>test</scope>
+		<scope>test</scope>
 		</dependency> -->
 
 
@@ -146,7 +147,7 @@
 				<version>3.3.0</version>
 				<configuration>
 					<excludes>
-						<exclude>application-local*</exclude>						
+						<exclude>application-local*</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -154,12 +155,22 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<layers>
-						<enabled>true</enabled>
-					</layers>
+					<pullPolicy>IF_NOT_PRESENT</pullPolicy>
 					<image>
-						<name>mp/istint-backend-local</name>
+						<env>
+							<BP_JVM_VERSION>17</BP_JVM_VERSION>
+							<BP_OCI_DESCRIPTION>Backend for iStint</BP_OCI_DESCRIPTION>
+							<BP_OCI_CREATED>${env.BP_OCI_CREATED}</BP_OCI_CREATED>
+							<BP_OCI_VERSION>${env.BP_OCI_VERSION}</BP_OCI_VERSION>
+							<BP_OCI_REVISION>${env.BP_OCI_REVISION}</BP_OCI_REVISION>
+						</env>
 					</image>
+					<docker>
+						<publishRegistry>
+							<username>${env.DOCKER_REGISTRY_USERNAME}</username>
+							<password>${env.DOCKER_REGISTRY_PASSWORD}</password>
+						</publishRegistry>
+					</docker>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -171,6 +182,10 @@
 						<include>**/Test*</include>
 					</includes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.graalvm.buildtools</groupId>
+				<artifactId>native-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
