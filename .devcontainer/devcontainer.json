@@ -2,30 +2,33 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.2/containers/java
 {
   "name": "Java",
-  "image": "mcr.microsoft.com/devcontainers/java:17",
-  
+  "image": "mcr.microsoft.com/devcontainers/java:17-bullseye",
+
   // Set *default* container specific settings.json values on container create.
-  "settings": {
-  
-    "java.jdt.ls.java.home": "/docker-java-home",
-    "editor.formatOnSave": true,
-    "[java]": {
-      "editor.suggest.snippetsPreventQuickSuggestions": false,
-      "editor.defaultFormatter": "redhat.java",
-      "editor.codeActionsOnSave": {
-        "source.organizeImports": true
-      }
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "java.jdt.ls.java.home": "/docker-java-home",
+        "editor.formatOnSave": true,
+        "[java]": {
+          "editor.suggest.snippetsPreventQuickSuggestions": false,
+          "editor.defaultFormatter": "redhat.java",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+          }
+        }
+      },
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "Pivotal.vscode-boot-dev-pack",
+        "redhat.fabric8-analytics",
+        "gabrielbb.vscode-lombok",
+        "eamodio.gitlens",
+        "GitHub.vscode-pull-request-github"
+      ]
     }
   },
-  // Add the IDs of extensions you want installed when the container is created.
-  "extensions": [
-    "vscjava.vscode-java-pack",
-    "Pivotal.vscode-boot-dev-pack",
-    "redhat.fabric8-analytics",
-    "gabrielbb.vscode-lombok",
-    "eamodio.gitlens",
-    "GitHub.vscode-pull-request-github"
-  ],
   "containerEnv": {
     "TZ": "Europe/Berlin"
   },
