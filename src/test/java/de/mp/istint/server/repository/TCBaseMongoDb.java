@@ -1,8 +1,7 @@
 package de.mp.istint.server.repository;
 
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -15,14 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DirtiesContext
 public abstract class TCBaseMongoDb {
     @Container
+    @ServiceConnection
     protected static MongoDBContainer mongo = new MongoDBContainer("mongo:5");
-
-    @DynamicPropertySource
-    protected static void registerMongoDbProperties(DynamicPropertyRegistry registry) {
-
-        registry.add("spring.data.mongodb.host", mongo::getHost);
-        registry.add("spring.data.mongodb.uri", mongo::getConnectionString);
-
-    }
 
 }
